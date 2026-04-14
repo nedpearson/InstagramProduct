@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { DashboardChart } from '@/components/DashboardChart';
 import { AIInsightsStrip } from '@/components/AIInsightsStrip';
 import { OnboardingChecklist } from '@/components/OnboardingChecklist';
+import { CMDKButton } from '@/components/CMDKButton';
 import {
   Users, CalendarDays, CheckCircle2, AlertCircle, TrendingUp, Activity,
   Sparkles, MoreHorizontal, ShieldCheck, Zap, ArrowUpRight, Gauge
@@ -116,17 +117,8 @@ export default async function OverviewPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* ⌘K hint */}
-          <button
-            onClick={() => document.getElementById('command-palette-trigger')?.click()}
-            className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] rounded-xl transition-all group"
-          >
-            <span className="text-[12px] text-zinc-500 group-hover:text-zinc-300 font-medium">Quick actions</span>
-            <kbd className="flex items-center gap-0.5 text-[9px] font-black text-zinc-700 tracking-wide">
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.07]">⌘</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.07]">K</span>
-            </kbd>
-          </button>
+          {/* ⌘K hint — wrapped in client component to avoid onClick in server component */}
+          <CMDKButton />
           <Link href="/briefs" className="px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-white text-[13px] font-semibold rounded-xl transition-all duration-200 shadow-inner">
             New Funnel
           </Link>
