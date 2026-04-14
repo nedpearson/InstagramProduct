@@ -4,23 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard,
-  FileText,
-  Package,
-  Library,
-  Calendar,
-  AlertCircle,
-  Inbox,
-  Activity,
-  ShieldCheck,
-  LineChart,
-  Settings,
-  Menu,
-  Bell,
-  Search,
-  Command,
-  X,
-  Sparkles
+  LayoutDashboard, FileText, Package, Library, Calendar,
+  AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
+  Settings, Menu, Bell, Search, X, Zap, ChevronRight
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -45,49 +31,74 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [tick, setTick] = useState(0);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  // Subtle live clock tick for AI aliveness
   useEffect(() => {
-    setMounted(true);
+    const interval = setInterval(() => setTick(t => t + 1), 3000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex h-screen text-zinc-100 font-sans antialiased overflow-hidden bg-transparent">
-      {/* Mobile sidebar overlay */}
+      {/* Mobile overlay */}
       <AnimatePresence>
         {sidebarOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md lg:hidden"
-            onClick={() => setSidebarOpen(false)} 
+            onClick={() => setSidebarOpen(false)}
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.div 
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-black/40 backdrop-blur-2xl border-r border-white/5 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
-        <div className="flex items-center justify-between h-20 px-6 border-b border-white/5 bg-white/[0.01]">
-          <Link href="/overview" className="flex items-center gap-3 group cursor-pointer text-white">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-inner group-hover:scale-105 transition-all duration-300 ease-out border border-indigo-400/20">
-               <Sparkles className="w-5 h-5 text-white" />
+      <motion.div className={`fixed inset-y-0 left-0 z-50 w-[264px] flex flex-col bg-[#030304]/90 backdrop-blur-2xl border-r border-white/[0.05] transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        
+        {/* Logo */}
+        <div className="flex items-center justify-between h-[64px] px-5 border-b border-white/[0.04] shrink-0">
+          <Link href="/overview" className="flex items-center gap-3 group cursor-pointer">
+            {/* AI logo mark */}
+            <div className="relative w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 opacity-90 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-[1px] rounded-[10px] bg-gradient-to-br from-indigo-400/20 to-transparent" />
+              <Zap className="w-4 h-4 text-white relative z-10 drop-shadow-sm" />
             </div>
-            <span className="font-extrabold tracking-tight text-xl">InstaFlow</span>
+            <div className="flex flex-col leading-none">
+              <span className="font-extrabold tracking-tight text-[15px] text-white">InstaFlow</span>
+              <span className="ai-section-label mt-0.5" style={{ fontSize: '8px', letterSpacing: '0.14em' }}>AI PLATFORM</span>
+            </div>
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-zinc-500 hover:text-white transition">
-            <X className="w-5 h-5" />
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-zinc-500 hover:text-white transition p-1">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="overflow-y-auto h-[calc(100vh-5rem)] scrollbar-hide py-8 px-4 space-y-10">
-          <div>
-            <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4 px-3 flex items-center gap-2">
-              Workspace <div className="h-px flex-1 bg-white/5"></div>
+        {/* AI Status Strip */}
+        <div className="px-4 py-3 border-b border-white/[0.04] bg-indigo-500/[0.04]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-[10px] font-bold text-emerald-400/80 tracking-widest uppercase">Neural Engine Active</span>
             </div>
-            <nav className="space-y-1.5 relative">
+            <span className="text-[9px] text-zinc-600 font-mono tabular-nums">{tick > 0 ? `+${tick * 3}s` : '0s'}</span>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <div className="overflow-y-auto flex-1 scrollbar-hide py-6 px-3 space-y-6">
+          {/* Workspace */}
+          <div>
+            <div className="ai-section-label px-3 mb-3 flex items-center gap-2">
+              Workspace <div className="h-px flex-1 bg-white/[0.04]"></div>
+            </div>
+            <nav className="space-y-0.5">
               {navigation.map((item) => {
                 const isActive = pathname === item.href || (pathname === '/' && item.href === '/overview');
                 return (
@@ -95,32 +106,35 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
                     key={item.name}
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
-                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold z-10 ${
-                      isActive 
-                        ? 'text-white' 
-                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-[13px] font-semibold z-10 group/nav ${
+                      isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]'
                     }`}
                   >
                     {isActive && mounted && (
                       <motion.div
-                        layoutId="activeNavBackground"
-                        className="absolute inset-0 bg-white/5 rounded-xl -z-10 border border-white/10 shadow-inner"
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        layoutId="activeNavBg"
+                        className="absolute inset-0 rounded-xl -z-10 bg-white/[0.06] border border-white/[0.08] shadow-inner"
+                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                       />
                     )}
-                    <item.icon className={`w-5 h-5 transition-colors z-10 ${isActive ? 'text-white' : 'text-zinc-500'}`} />
-                    <span className="z-10">{item.name}</span>
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-indigo-400 rounded-full" />
+                    )}
+                    <item.icon className={`w-[17px] h-[17px] transition-colors shrink-0 ${isActive ? 'text-indigo-400' : 'text-zinc-600 group-hover/nav:text-zinc-400'}`} />
+                    <span>{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
           </div>
 
+          {/* Operations */}
           <div>
-            <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4 px-3 flex items-center gap-2">
-              Operations <div className="h-px flex-1 bg-white/5"></div>
+            <div className="ai-section-label px-3 mb-3 flex items-center gap-2">
+              Operations <div className="h-px flex-1 bg-white/[0.04]"></div>
             </div>
-            <nav className="space-y-1.5 relative">
+            <nav className="space-y-0.5">
               {operations.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -128,70 +142,99 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
                     key={item.name}
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
-                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold z-10 ${
-                      isActive 
-                        ? 'text-white' 
-                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-[13px] font-semibold z-10 group/nav ${
+                      isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]'
                     }`}
                   >
                     {isActive && mounted && (
                       <motion.div
-                        layoutId="activeNavBackground"
-                        className="absolute inset-0 bg-white/5 rounded-xl -z-10 border border-white/10 shadow-inner"
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        layoutId="activeNavBg"
+                        className="absolute inset-0 rounded-xl -z-10 bg-white/[0.06] border border-white/[0.08] shadow-inner"
+                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                       />
                     )}
-                    <item.icon className={`w-5 h-5 transition-colors z-10 ${isActive ? 'text-white' : 'text-zinc-500'}`} />
-                    <span className="z-10">{item.name}</span>
+                    {isActive && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-indigo-400 rounded-full" />
+                    )}
+                    <item.icon className={`w-[17px] h-[17px] transition-colors shrink-0 ${isActive ? 'text-indigo-400' : 'text-zinc-600 group-hover/nav:text-zinc-400'}`} />
+                    <span>{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
           </div>
         </div>
-      </motion.div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-transparent">
-        {/* Header */}
-        <header className="h-20 flex-shrink-0 bg-black/20 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-6 lg:px-10 z-20 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent mix-blend-overlay pointer-events-none" />
-          
-          <div className="flex items-center gap-4 relative z-10">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-zinc-400 hover:text-white transition">
-              <Menu className="w-6 h-6" />
-            </button>
-            <div className="hidden md:flex items-center px-4 py-2.5 bg-white/5 rounded-xl border border-white/5 focus-within:bg-black focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all w-80 shadow-inner group">
-              <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-zinc-300 mr-3 transition-colors" />
-              <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm font-medium w-full placeholder:text-zinc-600 text-white" />
-              <div className="text-[10px] font-bold text-zinc-500 bg-white/5 px-2 py-1 rounded-md border border-white/10 tracking-widest leading-none">⌘K</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-6 relative z-10">
-            <button className="relative p-2.5 text-zinc-400 hover:text-white transition rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-indigo-500 rounded-full border-2 border-[#09090b]"></span>
-            </button>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-zinc-800 to-zinc-900 flex items-center justify-center text-white text-sm font-bold shadow-sm ring-1 ring-white/10 cursor-pointer hover:scale-105 transition-transform">
+        {/* System footer */}
+        <div className="px-4 py-4 border-t border-white/[0.04] bg-white/[0.01] shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-zinc-800 to-zinc-900 flex items-center justify-center text-[11px] font-bold text-white ring-1 ring-white/10 shrink-0">
               NP
             </div>
+            <div className="flex flex-col leading-none min-w-0">
+              <span className="text-[12px] font-semibold text-white truncate">Ned Pearson</span>
+              <span className="text-[10px] text-zinc-500 mt-0.5">Administrator</span>
+            </div>
+            <Settings className="w-4 h-4 text-zinc-600 hover:text-white transition-colors ml-auto cursor-pointer shrink-0" />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-transparent min-w-0">
+        
+        {/* Top header */}
+        <header className="h-[64px] flex-shrink-0 border-b border-white/[0.04] bg-[#030304]/70 backdrop-blur-xl flex items-center justify-between px-6 lg:px-8 z-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/[0.01] via-transparent to-transparent pointer-events-none" />
+
+          <div className="flex items-center gap-4 relative z-10 flex-1">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-zinc-400 hover:text-white transition p-1">
+              <Menu className="w-5 h-5" />
+            </button>
+            
+            {/* AI command bar */}
+            <div className="hidden md:flex items-center px-3.5 py-2 bg-white/[0.04] rounded-xl border border-white/[0.06] focus-within:bg-white/[0.07] focus-within:border-indigo-500/30 transition-all w-72 group shadow-inner">
+              <Search className="w-3.5 h-3.5 text-zinc-600 group-focus-within:text-indigo-400 mr-2.5 transition-colors shrink-0" />
+              <input
+                type="text"
+                placeholder="Search or run command..."
+                className="bg-transparent border-none outline-none text-[13px] font-medium w-full placeholder:text-zinc-600 text-white"
+              />
+              <div className="text-[9px] font-bold text-zinc-600 bg-white/[0.04] px-1.5 py-1 rounded border border-white/[0.06] tracking-widest shrink-0 leading-none">⌘K</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10">
+            {/* AI compute indicator */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/[0.08] border border-indigo-500/[0.15]">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
+              </span>
+              <span className="text-[10px] font-bold text-indigo-400/80 tracking-widest uppercase">AI Active</span>
+            </div>
+
+            <button className="relative p-2 text-zinc-500 hover:text-white transition rounded-lg hover:bg-white/[0.05] border border-transparent hover:border-white/[0.08]">
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-indigo-500 rounded-full ring-2 ring-[#030304]"></span>
+            </button>
           </div>
         </header>
 
-        {/* Scrollable Content */}
+        {/* Page content */}
         <main className="flex-1 overflow-y-auto scrollbar-hide relative bg-transparent">
-           <AnimatePresence mode="wait">
-             <motion.div
-               key={pathname}
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               exit={{ opacity: 0, y: -10 }}
-               transition={{ duration: 0.3, ease: 'easeOut' }}
-               className="h-full relative z-10"
-             >
-                {children}
-             </motion.div>
-           </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="h-full relative z-10"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>

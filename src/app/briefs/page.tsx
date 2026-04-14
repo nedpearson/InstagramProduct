@@ -12,21 +12,20 @@ export default async function BriefsPage() {
   });
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
-      
-      {/* Ambient backgrounds */}
+    <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
       <div className="mesh-bg-1" />
       <div className="mesh-bg-2" />
+      <div className="mesh-bg-3" />
 
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10 pt-2">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-sm">Product Briefs</h1>
-          <p className="text-sm font-bold tracking-wide text-zinc-400 mt-2 uppercase">Configure foundational strategy and targets for AI generation.</p>
+          <div className="ai-section-label mb-3">Workspace · Briefs</div>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white">Product Briefs</h1>
+          <p className="text-sm font-medium text-zinc-500 mt-2">Configure foundational strategy and targets for AI generation.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-6 py-3 bg-white text-black font-black text-sm rounded-xl shadow-md hover:shadow-lg hover:bg-zinc-200 transition-all duration-300 flex items-center gap-2 active:scale-95">
-            <Plus className="w-4 h-4 flex-shrink-0" /> New Brief
+          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 active:scale-95">
+            <Plus className="w-3.5 h-3.5 flex-shrink-0" /> New Brief
           </button>
         </div>
       </div>
@@ -34,7 +33,7 @@ export default async function BriefsPage() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
         {briefs.map((brief) => (
-          <div key={brief.id} className="group glass-panel border border-white/5 p-6 md:p-8 rounded-3xl shadow-sm hover:border-white/10 transition-all duration-300 flex flex-col justify-between relative overflow-hidden hover:-translate-y-0.5">
+          <div key={brief.id} className="group glass-panel-ai border border-white/[0.05] p-6 rounded-2xl shadow-sm hover:border-indigo-500/20 transition-all duration-300 flex flex-col justify-between relative overflow-hidden hover:-translate-y-px ai-scan-panel">
 
             <div>
               <div className="flex justify-between items-start mb-8 relative z-10">

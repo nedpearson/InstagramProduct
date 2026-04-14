@@ -11,24 +11,25 @@ export default async function LibraryPage() {
   });
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 ease-out">
-      {/* Ambient backgrounds */}
+    <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 ease-out">
       <div className="mesh-bg-1" />
       <div className="mesh-bg-2" />
+      <div className="mesh-bg-3" />
       
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10 pt-2">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-sm">Content Library</h1>
-          <p className="text-sm font-bold tracking-wide text-zinc-400 mt-2 uppercase">Manage and review all generated post variants and media.</p>
+          <div className="ai-section-label mb-3">Workspace · Content Library</div>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white">Content Library</h1>
+          <p className="text-sm font-medium text-zinc-500 mt-2">Manage and review all generated post variants and media.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-6 py-3 bg-white text-black font-black text-sm rounded-xl shadow-md hover:shadow-lg hover:bg-zinc-200 transition-all duration-300 flex items-center gap-2 active:scale-95">
+          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 active:scale-95">
             Create Asset
           </button>
         </div>
       </div>
 
-      <div className="glass-panel border-white/5 shadow-sm rounded-3xl overflow-hidden relative z-10 hover:border-white/10 transition-colors duration-300">
+      <div className="glass-panel-ai ai-scan-panel border-white/[0.05] shadow-sm rounded-2xl overflow-hidden relative z-10 hover:border-white/[0.09] transition-colors duration-300">
         {/* Toolbar */}
         <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white/[0.01]">
           <div className="relative w-full md:w-80 group">
@@ -45,11 +46,11 @@ export default async function LibraryPage() {
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-[#050505]/50 border-b border-white/5">
               <tr>
-                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Title</th>
-                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Type</th>
-                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Campaign</th>
-                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Status</th>
-                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px] text-right">Actions</th>
+                <th className="px-7 py-4 font-bold text-zinc-600 text-[9px] tracking-[0.15em] uppercase">Title</th>
+                <th className="px-7 py-4 font-bold text-zinc-600 text-[9px] tracking-[0.15em] uppercase">Type</th>
+                <th className="px-7 py-4 font-bold text-zinc-600 text-[9px] tracking-[0.15em] uppercase">Campaign</th>
+                <th className="px-7 py-4 font-bold text-zinc-600 text-[9px] tracking-[0.15em] uppercase">Status</th>
+                <th className="px-7 py-4 font-bold text-zinc-600 text-[9px] tracking-[0.15em] uppercase text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5 bg-transparent">

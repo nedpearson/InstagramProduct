@@ -1,84 +1,134 @@
 @import "tailwindcss";
 
 :root {
-  /* DARK LUXURY SAAS THEME */
-  --background: #050505;
-  --foreground: #e4e4e7; /* crisp white/gray */
+  /* DEEP AI DARK SYSTEM */
+  --background: #030304;
+  --foreground: #e4e4e7;
 
-  --card: #0a0a0c;
+  --card: #08080b;
   --card-foreground: #fafafa;
 
-  --popover: #0a0a0c;
+  --popover: #08080b;
   --popover-foreground: #fafafa;
 
-  /* Primary Accent: Electric indigo / blue */
-  --primary: #4f46e5;
+  /* Primary: Electric indigo */
+  --primary: #6366f1;
   --primary-foreground: #ffffff;
 
-  /* Secondary: Subtle Graphite */
-  --secondary: #121214;
+  /* Secondary: Graphite dark */
+  --secondary: #0d0d12;
   --secondary-foreground: #a1a1aa;
 
-  --muted: #121214;
-  --muted-foreground: #71717a;
+  --muted: #0d0d12;
+  --muted-foreground: #52525b;
 
-  --accent: #1f1f22;
+  --accent: #18181f;
   --accent-foreground: #ffffff;
 
   --destructive: #7f1d1d;
   --destructive-foreground: #f8fafc;
 
-  --border: #1f1f22;
-  --input: #1f1f22;
-  --ring: #4f46e5;
+  --border: #18181f;
+  --input: #18181f;
+  --ring: #6366f1;
 
   --radius: 0.5rem;
+
+  /* AI accent colors */
+  --ai-indigo: #6366f1;
+  --ai-violet: #8b5cf6;
+  --ai-cyan: #06b6d4;
+  --ai-emerald: #10b981;
 }
 
 @layer base {
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior-y: none;
   }
 }
 
-/* Premium Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+/* ——————————————————————————————————————
+   PREMIUM SCROLLBAR
+—————————————————————————————————————— */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+/* ——————————————————————————————————————
+   KEYFRAMES
+—————————————————————————————————————— */
+@keyframes ai-scan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
 
-/* Glassmorphism utility */
+@keyframes ai-pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes ai-breathe {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+@keyframes ai-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes ai-border-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* ——————————————————————————————————————
+   BASE GLASS PANEL — AI ENHANCED
+—————————————————————————————————————— */
 .glass {
-  background: rgba(10, 10, 12, 0.4);
+  background: rgba(8, 8, 12, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
 }
 
 .glass-panel {
-  background: linear-gradient(145deg, rgba(20, 20, 24, 0.7) 0%, rgba(10, 10, 12, 0.8) 100%);
+  background: linear-gradient(145deg, rgba(18, 18, 24, 0.75) 0%, rgba(8, 8, 12, 0.85) 100%);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 8px 32px -4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 8px 32px -4px rgba(0, 0, 0, 0.4);
 }
 
-/* Ambient glow system */
+/* Top-edge glow line on glass panels (subtle AI feel) */
+.glass-panel-ai {
+  background: linear-gradient(160deg, rgba(22, 22, 32, 0.8) 0%, rgba(8, 8, 12, 0.9) 100%);
+  backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    inset 0 1px 0 0 rgba(99, 102, 241, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 16px 48px -8px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+/* ——————————————————————————————————————
+   AI GLOW BORDERS
+—————————————————————————————————————— */
 .glow-border {
   position: relative;
 }
@@ -88,38 +138,162 @@
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(to bottom right, rgba(79, 70, 229, 0.5), rgba(0,0,0,0));
+  background: linear-gradient(to bottom right, rgba(99, 102, 241, 0.4), rgba(0,0,0,0));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
 }
 
-/* Soft ambient mesh blobs */
+/* Live pulse indicator */
+.ai-live-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-live-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  animation: ai-pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ——————————————————————————————————————
+   AI SCANNING LINE (on panels)
+—————————————————————————————————————— */
+.ai-scan-panel {
+  position: relative;
+  overflow: hidden;
+}
+.ai-scan-panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1), transparent);
+  animation: ai-scan 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ——————————————————————————————————————
+   AI SHIMMER (for loading / skeleton)
+—————————————————————————————————————— */
+.ai-shimmer {
+  background: linear-gradient(
+    105deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.03) 40%,
+    rgba(99, 102, 241, 0.06) 50%,
+    rgba(255,255,255,0.03) 60%,
+    rgba(255,255,255,0) 100%
+  );
+  background-size: 200% 100%;
+  animation: ai-shimmer 3s linear infinite;
+}
+
+/* ——————————————————————————————————————
+   AI BADGE
+—————————————————————————————————————— */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: rgba(165, 167, 255, 0.9);
+}
+
+/* ——————————————————————————————————————
+   AMBIENT NEURAL MESH BACKGROUNDS
+—————————————————————————————————————— */
 .mesh-bg-1 {
   position: fixed;
-  top: -15%; left: -10%;
-  width: 50vw; height: 50vh;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, rgba(5,5,5,0) 65%);
-  filter: blur(90px);
+  top: -20%; left: -15%;
+  width: 55vw; height: 55vh;
+  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.07) 0%, rgba(3, 3, 4, 0) 65%);
+  filter: blur(80px);
   z-index: 0;
   pointer-events: none;
+  animation: ai-breathe 10s ease-in-out infinite;
 }
 
 .mesh-bg-2 {
   position: fixed;
-  bottom: -20%; right: -10%;
+  bottom: -25%; right: -15%;
   width: 60vw; height: 60vh;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.05) 0%, rgba(5,5,5,0) 65%);
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.05) 0%, rgba(3, 3, 4, 0) 65%);
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  animation: ai-breathe 14s ease-in-out infinite reverse;
+}
+
+/* Third subtle cyan mesh for depth */
+.mesh-bg-3 {
+  position: fixed;
+  top: 40%; left: 40%;
+  width: 30vw; height: 30vh;
+  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.03) 0%, rgba(3, 3, 4, 0) 70%);
   filter: blur(120px);
   z-index: 0;
   pointer-events: none;
+  animation: ai-breathe 18s ease-in-out infinite;
 }
 
-/* Smooth input focus glows */
+/* ——————————————————————————————————————
+   INPUT FOCUS — AI GLOW
+—————————————————————————————————————— */
 input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2), inset 0 1px 2px rgba(0,0,0,0.2) !important;
-  border-color: rgba(79, 70, 229, 0.5) !important;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3), inset 0 1px 2px rgba(0,0,0,0.2) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  outline: none !important;
 }
 
-/* Remove default dark specific hacks if any later on, keep everything in this dark ecosystem */
+/* ——————————————————————————————————————
+   MONOSPACE NUMERICS (AI data feel)
+—————————————————————————————————————— */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ——————————————————————————————————————
+   FLOATING CARD ANIMATION
+—————————————————————————————————————— */
+.ai-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ——————————————————————————————————————
+   AI SECTION LABEL
+—————————————————————————————————————— */
+.ai-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(99, 102, 241, 0.6);
+}
+
+/* ——————————————————————————————————————
+   METRIC NUMBER — technical mono feel
+—————————————————————————————————————— */
+.ai-metric {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}

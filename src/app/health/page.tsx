@@ -13,21 +13,20 @@ export default async function SystemHealthPage() {
   });
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
-      
-      {/* Ambient backgrounds */}
+    <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
       <div className="mesh-bg-1" />
       <div className="mesh-bg-2" />
+      <div className="mesh-bg-3" />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10 pt-2">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-sm">System Health</h1>
-          <p className="text-sm font-bold tracking-wide text-zinc-400 mt-2 uppercase">Live telemetry and operational status of background services.</p>
+          <div className="ai-section-label mb-3">Operations · System Health</div>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white">System Health</h1>
+          <p className="text-sm font-medium text-zinc-500 mt-2">Live telemetry and operational status of background services.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-inner">
-            <RefreshCw className="w-4 h-4 text-indigo-400" /> Refresh Telemetry
+          <button className="px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-white font-bold text-[13px] rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-inner">
+            <RefreshCw className="w-3.5 h-3.5 text-indigo-400" /> Refresh Telemetry
           </button>
         </div>
       </div>
