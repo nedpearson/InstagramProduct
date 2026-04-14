@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FileText, Package, Library, Calendar,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
-  Settings, Menu, Bell, Search, X, Zap, ChevronRight
+  Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -24,6 +24,7 @@ const operations = [
   { name: 'System Health', href: '/health', icon: Activity },
   { name: 'Rules Engine', href: '/rules', icon: ShieldCheck },
   { name: 'Analytics', href: '/analytics', icon: LineChart },
+  { name: 'Billing', href: '/billing', icon: Gem },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -171,11 +172,15 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-zinc-800 to-zinc-900 flex items-center justify-center text-[11px] font-bold text-white ring-1 ring-white/10 shrink-0">
               NP
             </div>
-            <div className="flex flex-col leading-none min-w-0">
+            <div className="flex flex-col leading-none min-w-0 flex-1">
               <span className="text-[12px] font-semibold text-white truncate">Ned Pearson</span>
               <span className="text-[10px] text-zinc-500 mt-0.5">Administrator</span>
             </div>
-            <Settings className="w-4 h-4 text-zinc-600 hover:text-white transition-colors ml-auto cursor-pointer shrink-0" />
+            {/* Plan badge — links to billing */}
+            <Link href="/billing" className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all group/plan">
+              <Gem className="w-3 h-3 text-indigo-400 group-hover/plan:scale-110 transition-transform" />
+              <span className="text-[9px] font-black text-indigo-400 tracking-widest uppercase">Pro</span>
+            </Link>
           </div>
         </div>
       </motion.div>

@@ -422,3 +422,75 @@ model AuditLog {
   ipAddress String?
   createdAt DateTime @default(now())
 }
+
+// ─── MONETIZATION & BILLING ───────────────────────────────────────────────────
+
+model Subscription {
+  id                 String    @id @default(uuid())
+  planId             String    @default("starter") // starter | pro | agency | enterprise
+  status             String    @default("trial")   // trial | active | past_due | cancelled | paused | custom
+  billingCycle       String    @default("monthly")  // monthly | annual
+  trialEndsAt        DateTime?
+  currentPeriodStart DateTime  @default(now())
+  currentPeriodEnd   DateTime?
+  cancelledAt        DateTime?
+  mrr                Float     @default(0)          // Monthly recurring revenue in $
+  customNote         String?                        // Admin override notes
+  stripeCustomerId   String?
+  stripeSubId        String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  billingEvents      BillingEvent[]
+  addOns             AddOn[]
+  discounts          Discount[]
+}
+
+model UsageRecord {
+  id          String   @id @default(uuid())
+  metric      String   // ai_generations | scheduled_posts | social_accounts | team_members | workspaces | automation_runs | api_calls
+  count       Int      @default(0)
+  periodStart DateTime
+  periodEnd   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([metric, periodStart])
+}
+
+model BillingEvent {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  type           String       // subscription_created | plan_upgraded | plan_downgraded | payment_succeeded | payment_failed | trial_started | trial_converted | trial_expired | usage_limit_hit | addon_purchased | refund_issued | admin_override
+  planId         String?
+  amount         Float?
+  metadata       String?      // json
+  createdAt      DateTime     @default(now())
+}
+
+model AddOn {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  type           String       // ai_credits | extra_account | extra_seat | analytics_pack | white_label | priority_support | custom
+  quantity       Int          @default(1)
+  pricePerUnit   Float        @default(0)
+  active         Boolean      @default(true)
+  expiresAt      DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Discount {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  code           String?
+  type           String       @default("percentage") // percentage | flat
+  value          Float        // 20 = 20% or $20
+  reason         String?
+  appliedAt      DateTime     @default(now())
+  expiresAt      DateTime?
+  active         Boolean      @default(true)
+}
+
