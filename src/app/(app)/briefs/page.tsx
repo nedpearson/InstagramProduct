@@ -43,11 +43,11 @@ export default async function BriefsPage() {
                    </div>
                    <div>
                      <h3 className="font-bold text-xl text-white leading-tight group-hover:text-indigo-400 transition-colors drop-shadow-sm">{brief.product.name}</h3>
-                     <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold mt-3 tracking-widest uppercase shadow-inner border w-max block ${
-                       brief.status === 'active' 
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
-                        : 'bg-white/5 text-zinc-400 border-white/10'
-                     }`}>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold mt-3 tracking-widest uppercase shadow-inner border ${
+                        brief.status === 'active' 
+                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                         : 'bg-white/[0.05] text-zinc-400 border-white/[0.08]'
+                      }`}>
                        <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                        {brief.status}
                      </span>
@@ -78,9 +78,9 @@ export default async function BriefsPage() {
                 Edit Strategy
               </button>
               <form action={generateBriefAction.bind(null, brief.id)} className="flex-1">
-                <button type="submit" className="w-full h-full flex items-center justify-center gap-2 px-4 py-3 bg-white hover:bg-zinc-200 text-black text-sm font-black rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95">
-                  <Sparkles className="w-4 h-4 text-indigo-600" />
-                  Generate
+                <button type="submit" className="w-full h-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95">
+                  <Sparkles className="w-4 h-4" />
+                  Generate AI Content
                 </button>
               </form>
             </div>
@@ -89,17 +89,16 @@ export default async function BriefsPage() {
       </div>
       
       {briefs.length === 0 && (
-         <div className="col-span-full py-24 px-8 glass-panel border border-white/5 border-dashed rounded-3xl flex flex-col items-center justify-center text-center relative overflow-hidden group">
-            <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/10 group-hover:scale-105 transition-transform duration-300 shadow-inner">
-               <Briefcase className="w-8 h-8 text-zinc-500 group-hover:text-white transition-colors" />
+         <div className="col-span-full py-20 px-8 glass-panel-ai ai-scan-panel border border-dashed border-white/[0.08] rounded-2xl flex flex-col items-center justify-center text-center group relative overflow-hidden">
+            <div className="w-16 h-16 bg-white/[0.04] rounded-2xl flex items-center justify-center mb-5 border border-white/[0.07] group-hover:scale-105 transition-transform duration-300 shadow-inner">
+               <Briefcase className="w-7 h-7 text-zinc-600 group-hover:text-indigo-400 transition-colors" />
             </div>
-            <h3 className="text-2xl font-black tracking-tight text-white mb-2">No briefs configured</h3>
-            <p className="text-sm text-zinc-400 max-w-sm mb-8 font-medium">Define your first target persona and product brief to kick off the asset generation pipeline.</p>
-            <form action={createBriefAction.bind(null, 'DEMO_PRODUCT_ID_NEEDS_REPLACEMENT')}>
-               <button type="submit" className="px-8 py-3.5 bg-white text-black rounded-xl font-black shadow-md hover:shadow-lg hover:bg-zinc-200 transition-all duration-300 flex items-center gap-2 active:scale-95">
-                 <Plus className="w-4 h-4 flex-shrink-0" /> Create First Brief
-               </button>
-            </form>
+            <div className="ai-section-label mb-3">Product Briefs · Empty</div>
+            <h3 className="text-xl font-black tracking-tight text-white mb-2">No briefs configured</h3>
+            <p className="text-[13px] text-zinc-500 max-w-sm mb-7 font-medium leading-relaxed">Define your first target persona and product brief to kick off the asset generation pipeline.</p>
+            <button className="px-7 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-[13px] shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center gap-2 active:scale-95">
+               <Plus className="w-4 h-4" /> Create First Brief
+            </button>
          </div>
       )}
     </div>

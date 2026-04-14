@@ -297,3 +297,85 @@ input:focus, select:focus, textarea:focus {
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
+
+/* ——————————————————————————————————————
+   ANIMATE-IN / FADE-IN / SLIDE-IN
+   (Tailwind v4 polyfill — used on all pages)
+—————————————————————————————————————— */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-in-from-bottom-4 {
+  from { transform: translateY(1rem); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slide-in-from-top-2 {
+  from { transform: translateY(-0.5rem); opacity: 0; }
+  to   { transform: translateY(0);       opacity: 1; }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fade-in;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slide-in-from-bottom-4;
+}
+
+.slide-in-from-top-2 {
+  animation-name: slide-in-from-top-2;
+}
+
+.duration-300 { animation-duration: 300ms; }
+.duration-500 { animation-duration: 500ms; }
+.ease-out     { animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ——————————————————————————————————————
+   SELECTION HIGHLIGHT
+—————————————————————————————————————— */
+::selection {
+  background-color: rgba(99, 102, 241, 0.25);
+  color: #ffffff;
+}
+
+/* ——————————————————————————————————————
+   FOCUS VISIBLE — keyboard nav ring
+—————————————————————————————————————— */
+:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+/* ——————————————————————————————————————
+   STATUS PILL VARIANTS
+—————————————————————————————————————— */
+.status-active   { @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20; }
+.status-trial    { @apply bg-amber-500/10   text-amber-400   border border-amber-500/20;  }
+.status-past-due { @apply bg-red-500/10     text-red-400     border border-red-500/20;    }
+.status-inactive { @apply bg-white/[0.05]   text-zinc-500    border border-white/[0.08];  }
+
+/* ——————————————————————————————————————
+   GLASS PANEL — DARK VARIANT
+—————————————————————————————————————— */
+.glass-panel-dark {
+  background: linear-gradient(145deg, rgba(8, 8, 12, 0.95) 0%, rgba(5, 5, 8, 0.98) 100%);
+  backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 24px 64px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* ——————————————————————————————————————
+   PREMIUM SCROLLBAR (dark variant)
+—————————————————————————————————————— */
+.scrollbar-thin::-webkit-scrollbar { width: 3px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 10px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }

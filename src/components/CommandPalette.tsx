@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, LayoutDashboard, FileText, Package, Library, Calendar,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart, Settings,
-  Zap, ArrowRight, Clock, Sparkles, Hash, Command
+  Zap, ArrowRight, Clock, Sparkles, Hash, Command, Gem, CreditCard
 } from 'lucide-react';
 
 const NAV_COMMANDS = [
@@ -20,6 +20,7 @@ const NAV_COMMANDS = [
   { label: 'System Health', href: '/health', icon: Activity, group: 'Navigate', keys: 'G H', badge: undefined },
   { label: 'Rules Engine', href: '/rules', icon: ShieldCheck, group: 'Navigate', keys: undefined, badge: undefined },
   { label: 'Analytics Dashboard', href: '/analytics', icon: LineChart, group: 'Navigate', keys: undefined, badge: undefined },
+  { label: 'Billing & Subscription', href: '/billing', icon: Gem, group: 'Navigate', keys: undefined, badge: undefined },
   { label: 'Settings & Integration', href: '/settings', icon: Settings, group: 'Navigate', keys: undefined, badge: undefined },
 ];
 
@@ -27,6 +28,8 @@ const ACTION_COMMANDS = [
   { label: 'Create New Brief', href: '/briefs', icon: Zap, group: 'Actions', badge: 'AI', keys: undefined },
   { label: 'Schedule Content', href: '/calendar', icon: Calendar, group: 'Actions', badge: undefined, keys: undefined },
   { label: 'View Pending Review Tasks', href: '/queue', icon: AlertCircle, group: 'Actions', badge: undefined, keys: undefined },
+  { label: 'Upgrade Plan', href: '/billing', icon: Gem, group: 'Actions', badge: 'Billing', keys: undefined },
+  { label: 'Open Pricing — View Plans', href: '/pricing', icon: CreditCard, group: 'Actions', badge: undefined, keys: undefined },
   { label: 'Open Analytics', href: '/analytics', icon: LineChart, group: 'Actions', badge: undefined, keys: undefined },
   { label: 'Check System Health', href: '/health', icon: Activity, group: 'Actions', badge: undefined, keys: undefined },
   { label: 'Connect Instagram Account', href: '/settings', icon: Zap, group: 'Actions', badge: 'Setup', keys: undefined },

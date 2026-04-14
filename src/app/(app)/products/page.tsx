@@ -42,7 +42,7 @@ export default async function ProductsPage() {
               <span className={`relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold tracking-widest uppercase shadow-inner border ${
                 product.isActive 
                   ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
-                  : 'bg-white/5 text-zinc-400 border-white/10'
+                  : 'bg-white/[0.05] text-zinc-400 border-white/[0.08]'
               }`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                 {product.isActive ? 'Active' : 'Inactive'}
@@ -68,13 +68,14 @@ export default async function ProductsPage() {
         ))}
 
         {products.length === 0 && (
-          <div className="col-span-full py-24 px-8 glass-panel border border-white/5 border-dashed rounded-3xl flex flex-col items-center justify-center text-center group">
-            <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/10 group-hover:scale-105 transition-transform duration-300 shadow-inner">
-               <Tag className="w-8 h-8 text-zinc-500 group-hover:text-white transition-colors" />
+          <div className="col-span-full py-20 px-8 glass-panel-ai ai-scan-panel border border-dashed border-white/[0.08] rounded-2xl flex flex-col items-center justify-center text-center group relative overflow-hidden">
+            <div className="w-16 h-16 bg-white/[0.04] rounded-2xl flex items-center justify-center mb-5 border border-white/[0.07] group-hover:scale-105 transition-transform duration-300 shadow-inner">
+               <Tag className="w-7 h-7 text-zinc-600 group-hover:text-indigo-400 transition-colors" />
             </div>
-            <h3 className="text-2xl font-black tracking-tight text-white mb-2">No products added</h3>
-            <p className="text-sm text-zinc-400 max-w-sm mb-8 font-medium">Add the digital products or courses you plan on building funnels for.</p>
-            <button className="px-8 py-3.5 bg-white text-black rounded-xl font-black shadow-md hover:shadow-lg hover:bg-zinc-200 transition-all duration-300 flex items-center gap-2 active:scale-95">
+            <div className="ai-section-label mb-3">Products Catalog · Empty</div>
+            <h3 className="text-xl font-black tracking-tight text-white mb-2">No products added</h3>
+            <p className="text-[13px] text-zinc-500 max-w-sm mb-7 font-medium leading-relaxed">Add the digital products or courses you plan on building funnels for.</p>
+            <button className="px-7 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-[13px] shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center gap-2 active:scale-95">
                 <Plus className="w-4 h-4" /> Add First Product
             </button>
          </div>

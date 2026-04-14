@@ -54,7 +54,7 @@ function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-8">
-            {[['Features', '#features'], ['How It Works', '#how'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
+            {[['Features', '#features'], ['How It Works', '#how'], ['Pricing', '/pricing'], ['FAQ', '#faq']].map(([label, href]) => (
               <a key={label} href={href} className="text-[13px] font-semibold text-zinc-400 hover:text-white transition-colors">{label}</a>
             ))}
           </nav>
@@ -81,7 +81,7 @@ function Navbar() {
             transition={{ duration: 0.2 }}
             className="md:hidden bg-[#030304]/98 backdrop-blur-2xl border-b border-white/[0.05] px-6 pb-6 pt-2 space-y-3"
           >
-            {[['Features', '#features'], ['How It Works', '#how'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
+            {[['Features', '#features'], ['How It Works', '#how'], ['Pricing', '/pricing'], ['FAQ', '#faq']].map(([label, href]) => (
               <a key={label} href={href} onClick={() => setMobileOpen(false)} className="block text-[14px] font-semibold text-zinc-300 hover:text-white py-2 transition-colors">{label}</a>
             ))}
             <div className="pt-4 space-y-3 border-t border-white/[0.06]">
