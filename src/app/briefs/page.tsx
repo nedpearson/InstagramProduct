@@ -1,3 +1,4 @@
+import { generateBriefAction, createBriefAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
@@ -51,8 +52,8 @@ export default async function BriefsPage() {
               <button className="flex-1 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-sm font-medium rounded-md transition border border-zinc-200 dark:border-zinc-700">
                 Edit Brief
               </button>
-              <form action={`/api/brief/${brief.id}/generate`} method="POST" className="flex-1">
-                <button type="submit" className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition shadow-sm">
+              <form action={generateBriefAction.bind(null, brief.id)} className="flex-1">
+                <button type="submit" className="w-full py-2 bg-blue-600 hover:bg-blue-700 focus:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition shadow-sm">
                   Generate
                 </button>
               </form>
@@ -63,9 +64,12 @@ export default async function BriefsPage() {
           <div className="col-span-full text-center p-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl relative overflow-hidden">
             <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">No briefs found</h3>
             <p className="text-zinc-500 mb-6">Create a master product brief to start generating content.</p>
-            <button className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-medium transition shadow-lg relative z-10">
-              Create First Brief
-            </button>
+            {/* Find a product ID or just pass a hardcoded demo ID for this template */}
+            <form action={createBriefAction.bind(null, 'DEMO_PRODUCT_ID_NEEDS_REPLACEMENT')} className="relative z-10 w-max mx-auto">
+              <button type="submit" className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-medium transition shadow-lg relative z-10 cursor-pointer">
+                Create First Brief
+              </button>
+            </form>
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/20 dark:to-purple-950/20 pointer-events-none" />
           </div>
         )}

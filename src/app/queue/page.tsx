@@ -1,3 +1,4 @@
+import { processReviewTaskAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
@@ -24,12 +25,12 @@ export default async function ReviewQueuePage() {
 
         {tasks.length === 0 ? (
           <div className="text-center p-8 bg-white/50 dark:bg-zinc-900/50 rounded-lg border border-amber-100 dark:border-amber-900/50">
-            <p className="text-amber-700 dark:text-amber-600 font-medium">Queue is perfectly clear 🚀</p>
+             <p className="text-amber-700 dark:text-amber-600 font-medium">Queue is perfectly clear 🚀</p>
           </div>
         ) : (
           <div className="space-y-4">
             {tasks.map(task => (
-              <div key={task.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-lg flex items-center justify-between">
+              <div key={task.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 mb-1">
                     <span className="font-semibold text-lg text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
@@ -39,9 +40,13 @@ export default async function ReviewQueuePage() {
                   </div>
                   <p className="font-medium text-zinc-800 dark:text-zinc-200">{task.reason}</p>
                 </div>
-                <div className="flex gap-2">
-                  <button className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded text-sm font-medium transition">Reject</button>
-                  <button className="px-4 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded text-sm font-medium transition">Approve & Continue</button>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <form action={processReviewTaskAction.bind(null, task.id, 'reject')} className="flex-1 md:flex-none">
+                     <button type="submit" className="w-full px-3 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded text-sm font-medium transition">Reject</button>
+                  </form>
+                  <form action={processReviewTaskAction.bind(null, task.id, 'approve')} className="flex-1 md:flex-none">
+                    <button type="submit" className="w-full px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded text-sm font-medium transition">Approve & Continue</button>
+                  </form>
                 </div>
               </div>
             ))}

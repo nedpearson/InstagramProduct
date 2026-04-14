@@ -9,8 +9,8 @@ This system uses a Next.js (App Router) full-stack architecture with Prisma and 
 ### Layers
 
 1.  **Frontend Dashboard:** UI components in `src/app`. Tailored dynamically from the DB to visualize Briefs, Schedules, and Analytics.
-2.  **API Services:** Next.js Route handlers in `src/app/api`. (Example: `/api/brief/[id]/generate`). Responsible for receiving commands and pushing secure jobs into the queue.
-3.  **Local Automation Companion:** A durable `Node.js` worker (`src/script/companion.ts`). It polls the local database for queued operations (like API calls to generate content or local file writing) ensuring nothing heavy runs strictly in the UI process, providing Windows-safe resilience without requiring Docker/Redis.
+2.  **Server Actions:** Next.js Server Actions in `src/app/actions.ts`. Responsible for receiving form logic, revalidating routes natively, and pushing secure jobs into the queue.
+3.  **Local Automation Companion:** A durable `Node.js` worker (`src/script/companion.ts`). It polls the local database for queued operations (like AI generation or local file writing) ensuring nothing heavy runs strictly in the UI process, providing Windows-safe resilience without requiring Docker/Redis.
 4.  **Data Layer:** Prisma ORM connected to local `dev.db`.
 
 ## PowerShell Commands
