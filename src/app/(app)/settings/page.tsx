@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { saveManualTokenAction } from '@/app/actions';
+import { saveManualTokenAction } from '@/app/(app)/actions';
 import { Fingerprint, Shield, Zap, Lock, Settings as SettingsIcon, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';

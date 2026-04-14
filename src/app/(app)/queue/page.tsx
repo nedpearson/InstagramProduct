@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { processReviewTaskAction } from '../actions';
+import { processReviewTaskAction } from '@/app/(app)/actions';
 import { AlertCircle, Check, X, FileText, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';

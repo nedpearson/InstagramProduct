@@ -1,4 +1,4 @@
-import { generateBriefAction, createBriefAction } from '@/app/actions';
+import { generateBriefAction, createBriefAction } from '@/app/(app)/actions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers } from 'lucide-react';
