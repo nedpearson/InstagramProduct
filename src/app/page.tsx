@@ -17,6 +17,9 @@ export default function Home() {
           { text: 'Content Library', href: '/library' },
           { text: 'Calendar', href: '/calendar' },
           { text: 'Review Queue', href: '/queue' },
+          { text: 'Operator Inbox', href: '/inbox' },
+          { text: 'System Health', href: '/health' },
+          { text: 'Rules Engine', href: '/rules' },
           { text: 'Analytics', href: '/analytics' },
           { text: 'Settings', href: '/settings' },
         ].map((item) => (

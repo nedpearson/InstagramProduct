@@ -9,10 +9,17 @@ async function runCompanion() {
   
   setInterval(async () => {
     try {
-      console.log(`[COMPANION] Checking for pending background jobs... (${new Date().toISOString()})`);
+      // 1. Log heartbeat to watchdog
+      await prisma.watchdogHeartbeat.upsert({
+        where: { serviceName: 'companion' },
+        update: { lastPingAt: new Date(), status: 'alive' },
+        create: { serviceName: 'companion', status: 'alive' }
+      });
+
+      console.log(`[COMPANION] Worker Heartbeat OK. Checking for pending background jobs... (${new Date().toISOString()})`);
       
       const pendingJobs = await prisma.backgroundJob.findMany({
-        where: { status: 'queued', runAt: { lte: new Date() } },
+        where: { status: 'pending', runAt: { lte: new Date() } },
         take: 5
       });
 
@@ -22,11 +29,12 @@ async function runCompanion() {
         // Mark as processing
         await prisma.backgroundJob.update({
           where: { id: job.id },
-          data: { status: 'processing', attempts: { increment: 1 } }
+          data: { status: 'running', attempts: { increment: 1 } }
         });
 
         let success = true;
         let errorMessage = '';
+        let stackDetails = '';
 
         try {
           if (job.jobType === 'export_data') {
@@ -40,31 +48,51 @@ async function runCompanion() {
         } catch (e: any) {
           success = false;
           errorMessage = e.message || 'Unknown error';
+          stackDetails = e.stack || '';
         }
 
         if (success) {
           await prisma.backgroundJob.update({
             where: { id: job.id },
-            data: { status: 'completed', updatedAt: new Date() }
+            data: { status: 'resolved', updatedAt: new Date() }
           });
           console.log(`[COMPANION] Job ${job.id} completed successfully.`);
         } else {
+          const isDead = job.attempts >= job.maxAttempts;
+          
           await prisma.backgroundJob.update({
             where: { id: job.id },
             data: { 
-              status: job.attempts >= job.maxAttempts ? 'failed' : 'queued', 
+              status: isDead ? 'dead_letter' : 'retrying', 
               error: errorMessage,
+              nextRetryAt: isDead ? null : new Date(Date.now() + 60000 * job.attempts), // Exponential-ish backoff
               updatedAt: new Date()
             }
           });
+          
           console.error(`[COMPANION] Job ${job.id} failed: ${errorMessage}`);
-          if (job.attempts >= job.maxAttempts) {
-             // Create a ReviewTask for manual review of failed job
+          
+          if (isDead) {
+             console.error(`[COMPANION] Job ${job.id} EXHAUSTED max attempts. Routing to DLQ.`);
+             // Create Dead Letter Task
+             await prisma.deadLetterJob.create({
+                 data: {
+                     jobId: job.id,
+                     sourceModule: job.jobType,
+                     failureReason: errorMessage,
+                     stackTrace: stackDetails,
+                     firstFailedAt: job.createdAt,
+                     lastFailedAt: new Date(),
+                     replayEligible: true
+                 }
+             });
+             
+             // Create a ReviewTask for manual operator interference
              await prisma.reviewTask.create({
                 data: {
-                   entityType: 'failed_job',
+                   entityType: 'dead_letter',
                    entityId: job.id,
-                   reason: errorMessage
+                   reason: `Fatal failure in module ${job.jobType}: ${errorMessage}`
                 }
              });
           }
