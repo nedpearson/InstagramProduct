@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
-    "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} src/script/seed.ts"
+    "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} src/script/seed.ts",
+    "worker": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} src/script/companion.ts",
+    "dev:all": "concurrently \"npm run dev\" \"npm run worker\""
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^5.22.0",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -37,5 +40,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }
