@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-[#fafafa] dark:bg-[#09090b] selection:bg-indigo-500/30`}>
+      <body className={`${inter.className} bg-background text-foreground selection:bg-indigo-500/30 font-sans antialiased`}>
         <Sidebar>{children}</Sidebar>
       </body>
     </html>

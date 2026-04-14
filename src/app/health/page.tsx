@@ -13,105 +13,112 @@ export default async function SystemHealthPage() {
   });
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-700 ease-out">
+      
+      {/* Ambient backgrounds */}
+      <div className="mesh-bg-1" />
+      <div className="mesh-bg-2" />
+
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">System Health & Watchdog</h1>
-          <p className="text-sm text-zinc-500 mt-1">Live telemetry and operational status of background services.</p>
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-zinc-50 to-zinc-500">System Health</h1>
+          <p className="text-sm font-medium text-zinc-400 mt-1">Live telemetry and operational status of background services.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm font-medium rounded-lg shadow-sm transition flex items-center gap-2">
-            <RefreshCw className="w-4 h-4" /> Refresh Telemetry
+          <button className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-100 font-bold text-sm rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] active:scale-95 flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 text-indigo-400" /> Refresh Telemetry
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-6 rounded-2xl relative overflow-hidden group">
-            <div className="absolute right-0 top-0 p-4 opacity-50"><MailMinus className="w-16 h-16 text-red-500/20 dark:text-red-500/10" /></div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+        <div className="bg-gradient-to-br from-[#120505] to-[#0A0505] border border-red-500/20 p-8 rounded-3xl relative overflow-hidden group hover:shadow-[0_0_30px_rgba(239,68,68,0.15)] transition-all duration-500">
+            <div className="absolute right-0 top-0 p-4 opacity-30 group-hover:scale-110 transition-transform duration-700"><MailMinus className="w-24 h-24 text-red-500/20" /></div>
             <div className="relative z-10 flex flex-col h-full">
-               <h3 className="text-red-800 dark:text-red-400 font-semibold mb-2 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Dead Letters</h3>
-               <div className="text-4xl font-bold text-red-900 dark:text-red-300 mt-1">{deadLetters}</div>
-               <p className="text-xs text-red-700/80 dark:text-red-400/80 mt-2 mb-4">Jobs that exhausted all retry attempts.</p>
-               <Link href="/inbox" className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-red-700 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">
-                  Triage in Inbox &rarr;
+               <h3 className="text-red-400 font-bold mb-4 flex items-center gap-3 tracking-wide"><div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" /> Dead Letters</h3>
+               <div className="text-5xl font-black text-white tracking-tighter drop-shadow-md">{deadLetters}</div>
+               <p className="text-sm font-medium text-red-400/60 mt-2 mb-6">Jobs that exhausted all retry attempts.</p>
+               <Link href="/inbox" className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-red-400 hover:text-red-300 transition-colors w-max group/link">
+                  Triage in Inbox <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
                </Link>
             </div>
         </div>
         
-        <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 p-6 rounded-2xl relative overflow-hidden group">
-            <div className="absolute right-0 top-0 p-4 opacity-50"><AlertCircle className="w-16 h-16 text-amber-500/20 dark:text-amber-500/10" /></div>
+        <div className="bg-gradient-to-br from-[#120A05] to-[#0A0705] border border-amber-500/20 p-8 rounded-3xl relative overflow-hidden group hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] transition-all duration-500">
+            <div className="absolute right-0 top-0 p-4 opacity-30 group-hover:scale-110 transition-transform duration-700"><AlertCircle className="w-24 h-24 text-amber-500/20" /></div>
             <div className="relative z-10 flex flex-col h-full">
-               <h3 className="text-amber-800 dark:text-amber-400 font-semibold mb-2 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500" /> Open Review Tasks</h3>
-               <div className="text-4xl font-bold text-amber-900 dark:text-amber-300 mt-1">{reviewTasks}</div>
-               <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mt-2 mb-4">Actions halted awaiting human override.</p>
-               <Link href="/queue" className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 transition">
-                  Process Queue &rarr;
+               <h3 className="text-amber-400 font-bold mb-4 flex items-center gap-3 tracking-wide"><div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)]" /> Open Review Tasks</h3>
+               <div className="text-5xl font-black text-white tracking-tighter drop-shadow-md">{reviewTasks}</div>
+               <p className="text-sm font-medium text-amber-400/60 mt-2 mb-6">Actions halted awaiting human override.</p>
+               <Link href="/queue" className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-amber-400 hover:text-amber-300 transition-colors w-max group/link">
+                  Process Queue <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
                </Link>
             </div>
         </div>
 
-        <div className="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 p-6 rounded-2xl relative overflow-hidden group">
-            <div className="absolute right-0 top-0 p-4 opacity-50"><HeartPulse className="w-16 h-16 text-green-500/20 dark:text-green-500/10" /></div>
+        <div className="bg-gradient-to-br from-[#051208] to-[#050A06] border border-emerald-500/20 p-8 rounded-3xl relative overflow-hidden group hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] transition-all duration-500">
+            <div className="absolute right-0 top-0 p-4 opacity-30 group-hover:scale-110 transition-transform duration-700"><HeartPulse className="w-24 h-24 text-emerald-500/20" /></div>
             <div className="relative z-10 flex flex-col h-full">
-               <h3 className="text-green-800 dark:text-green-400 font-semibold mb-2 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Watchdog Services</h3>
-               <div className="text-4xl font-bold text-green-900 dark:text-green-300 mt-1">{watchdogs.length}</div>
-               <p className="text-xs text-green-700/80 dark:text-green-400/80 mt-2 mb-4">Background nodes currently checking in.</p>
-               <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
-                  <ShieldCheck className="w-4 h-4" /> Systems Healthy
+               <h3 className="text-emerald-400 font-bold mb-4 flex items-center gap-3 tracking-wide"><div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" /> Watchdog Services</h3>
+               <div className="text-5xl font-black text-white tracking-tighter drop-shadow-md">{watchdogs.length}</div>
+               <p className="text-sm font-medium text-emerald-400/60 mt-2 mb-6">Background nodes currently checking in.</p>
+               <span className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-emerald-400">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" /> Systems Healthy
                </span>
             </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800/60 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/20 flex justify-between items-center">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <HardDrive className="w-5 h-5 text-indigo-500" />
+      <div className="glass-panel rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 relative z-10 border border-white/5">
+        <div className="p-6 md:p-8 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+            <h3 className="font-bold text-xl flex items-center gap-3 tracking-tight text-white">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-inner">
+                 <HardDrive className="w-5 h-5" />
+              </div>
               Integration Health
             </h3>
         </div>
         <div className="p-0">
             {integrations.length === 0 ? (
-                <div className="p-12 text-center text-zinc-500">
-                  <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-100 dark:border-zinc-800/60">
-                    <AlertCircle className="w-8 h-8 text-zinc-400" />
+                <div className="p-16 text-center group/int">
+                  <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-inner group-hover/int:scale-110 transition-transform duration-500">
+                    <AlertCircle className="w-10 h-10 text-zinc-500" />
                   </div>
-                  <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-1">No integrations found</h3>
-                  <p className="text-sm">No integration health records tracked. Connect an account.</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">No integrations found</h3>
+                  <p className="text-zinc-400 font-medium max-w-sm mx-auto">No integration health records tracked. Connect an account in settings.</p>
                 </div>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm whitespace-nowrap">
-                        <thead className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800/60">
+                        <thead className="bg-[#050505]/50 border-b border-white/5">
                             <tr>
-                                <th className="px-6 py-4 font-medium text-zinc-500 uppercase tracking-wider text-xs">Provider</th>
-                                <th className="px-6 py-4 font-medium text-zinc-500 uppercase tracking-wider text-xs">Account</th>
-                                <th className="px-6 py-4 font-medium text-zinc-500 uppercase tracking-wider text-xs">Status</th>
-                                <th className="px-6 py-4 font-medium text-zinc-500 uppercase tracking-wider text-xs">Last Output</th>
+                                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Provider</th>
+                                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Account</th>
+                                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Status</th>
+                                <th className="px-8 py-5 font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Last Output</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/60">
+                        <tbody className="divide-y divide-white/5 bg-transparent">
                             {integrations.map(int => (
-                                <tr key={int.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition">
-                                    <td className="px-6 py-4">
-                                      <span className="font-semibold tracking-wider text-xs bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 px-2 py-1 rounded">
+                                <tr key={int.id} className="hover:bg-white/[0.02] transition-colors group">
+                                    <td className="px-8 py-5">
+                                      <span className="font-bold tracking-widest text-[10px] uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1.5 rounded-md shadow-inner">
                                         {int.provider}
                                       </span>
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100">{int.account.username}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 w-max ${
-                                            int.healthStatus === 'healthy' ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 ring-1 ring-green-600/20' :
-                                            int.healthStatus === 'degraded' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 ring-1 ring-amber-600/20' :
-                                            'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 ring-1 ring-red-600/20'
+                                    <td className="px-8 py-5 font-bold text-zinc-100">{int.account.username}</td>
+                                    <td className="px-8 py-5">
+                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 w-max shadow-sm ${
+                                            int.healthStatus === 'healthy' ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30' :
+                                            int.healthStatus === 'degraded' ? 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/30' :
+                                            'bg-red-500/10 text-red-400 ring-1 ring-red-500/30'
                                         }`}>
-                                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]"></span>
                                             {int.healthStatus}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-zinc-500 font-mono text-xs">
+                                    <td className="px-8 py-5 text-zinc-500 font-mono text-xs font-medium group-hover:text-zinc-300 transition-colors">
                                         {int.lastSuccessAt ? int.lastSuccessAt.toLocaleString() : 'Never'}
                                     </td>
                                 </tr>
