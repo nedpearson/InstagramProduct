@@ -3,6 +3,42 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
+export async function saveManualTokenAction(formData: FormData) {
+  const token = formData.get('token') as string;
+  if (!token) return;
+
+  try {
+    const workspace = await prisma.workspace.findFirst();
+    if (!workspace) throw new Error('No workspace found');
+    
+    // We overwrite or create
+    const existing = await prisma.integrationToken.findFirst({
+        where: { workspaceId: workspace.id, provider: 'meta_graph' }
+    });
+    
+    if (existing) {
+        await prisma.integrationToken.update({
+            where: { id: existing.id },
+            data: { encryptedToken: token }
+        });
+    } else {
+        await prisma.integrationToken.create({
+            data: {
+              workspaceId: workspace.id,
+              provider: 'meta_graph',
+              encryptedToken: token
+            }
+        });
+    }
+
+    revalidatePath('/settings');
+  } catch (error) {
+    console.error('Save token failed:', error);
+    throw new Error('Failed to save manual token.');
+  }
+}
+
+
 export async function generateBriefAction(briefId: string) {
   try {
     const brief = await prisma.productBrief.findUnique({
