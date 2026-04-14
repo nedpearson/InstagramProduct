@@ -1,10 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import {
-  CreditCard, Zap, Users, Globe, LayoutDashboard, Calendar,
-  CheckCircle2, AlertTriangle, ArrowRight, Plus, Settings2,
-  ShieldCheck, Clock, TrendingUp, Package, Gem, Sparkles, ChevronRight,
-  BarChart2, Lock
+  CreditCard, Gem, Clock, ArrowRight, CheckCircle2,
+  AlertTriangle, Settings2, Lock
 } from 'lucide-react';
 import { getSubscription, getAllUsage, trialDaysRemaining } from '@/lib/usageService';
 import { getPlan, PLANS, PLAN_ORDER, ADD_ONS, usagePct, annualSavings, FEATURE_LABELS, type PlanId } from '@/lib/plans';
@@ -206,11 +204,11 @@ export default async function BillingPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <UsageMeter label="AI Generations" used={usageMap.aiGenerations} limit={plan.limits.aiGenerations} icon={Sparkles} />
-            <UsageMeter label="Scheduled Posts" used={usageMap.scheduledPosts} limit={plan.limits.scheduledPosts} icon={Calendar} />
-            <UsageMeter label="Social Accounts" used={usageMap.socialAccounts} limit={plan.limits.socialAccounts} icon={Globe} />
-            <UsageMeter label="Workspaces" used={usageMap.workspaces} limit={plan.limits.workspaces} icon={LayoutDashboard} />
-            <UsageMeter label="Team Members" used={usageMap.teamMembers} limit={plan.limits.teamMembers} icon={Users} />
+            <UsageMeter label="AI Generations" used={usageMap.aiGenerations} limit={plan.limits.aiGenerations} />
+            <UsageMeter label="Scheduled Posts" used={usageMap.scheduledPosts} limit={plan.limits.scheduledPosts} />
+            <UsageMeter label="Social Accounts" used={usageMap.socialAccounts} limit={plan.limits.socialAccounts} />
+            <UsageMeter label="Workspaces" used={usageMap.workspaces} limit={plan.limits.workspaces} />
+            <UsageMeter label="Team Members" used={usageMap.teamMembers} limit={plan.limits.teamMembers} />
           </div>
 
           {/* Upgrade nudge when on starter/pro */}

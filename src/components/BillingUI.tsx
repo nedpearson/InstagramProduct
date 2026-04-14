@@ -9,14 +9,12 @@ interface UsageMeterProps {
   used: number;
   limit: number | null;
   unit?: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  warnAt?: number;   // % to warn (default 80)
-  criticalAt?: number; // % to go red (default 95)
+  warnAt?: number;
+  criticalAt?: number;
 }
 
 export function UsageMeter({
   label, used, limit, unit = '',
-  icon: Icon,
   warnAt = 80,
   criticalAt = 95,
 }: UsageMeterProps) {
@@ -41,7 +39,6 @@ export function UsageMeter({
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {Icon && <Icon className={`w-3.5 h-3.5 ${textColor}`} />}
           <span className="text-[11px] font-bold text-zinc-400">{label}</span>
         </div>
         <span className={`text-[11px] font-bold tabular-nums ${critical ? 'text-red-400' : warn ? 'text-amber-400' : 'text-zinc-500'}`}>
