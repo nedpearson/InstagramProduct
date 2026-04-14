@@ -11,24 +11,24 @@ export default async function LibraryPage() {
   });
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-700 ease-out">
+    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 ease-out">
       {/* Ambient backgrounds */}
       <div className="mesh-bg-1" />
       <div className="mesh-bg-2" />
       
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-zinc-200 to-zinc-600 drop-shadow-sm">Content Library</h1>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-sm">Content Library</h1>
           <p className="text-sm font-bold tracking-wide text-zinc-400 mt-2 uppercase">Manage and review all generated post variants and media.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-6 py-3 bg-white text-black font-black text-sm rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all duration-300 flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+          <button className="px-6 py-3 bg-white text-black font-black text-sm rounded-xl shadow-md hover:shadow-lg hover:bg-zinc-200 transition-all duration-300 flex items-center gap-2 active:scale-95">
             Create Asset
           </button>
         </div>
       </div>
 
-      <div className="glass-panel border-white/5 shadow-sm rounded-3xl overflow-hidden relative z-10 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-shadow duration-500">
+      <div className="glass-panel border-white/5 shadow-sm rounded-3xl overflow-hidden relative z-10 hover:border-white/10 transition-colors duration-300">
         {/* Toolbar */}
         <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white/[0.01]">
           <div className="relative w-full md:w-80 group">
@@ -57,7 +57,7 @@ export default async function LibraryPage() {
                 <tr key={asset.id} className="hover:bg-white/[0.02] transition-colors group cursor-pointer">
                   <td className="px-8 py-5 whitespace-nowrap">
                     <div className="flex items-center gap-5">
-                       <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shadow-inner group-hover:scale-105 group-hover:bg-indigo-500/20 transition-all duration-300 border border-indigo-500/20">
+                       <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shadow-inner group-hover:scale-105 group-hover:bg-indigo-500/20 transition-all duration-300 border border-indigo-500/20">
                           {asset.assetType === 'reel' ? <Video className="w-6 h-6" /> : 
                            asset.assetType === 'carousel' ? <ImageIcon className="w-6 h-6" /> :
                            asset.assetType === 'dm_sequence' ? <MessageSquare className="w-6 h-6" /> :
@@ -74,7 +74,7 @@ export default async function LibraryPage() {
                   </td>
                   <td className="px-8 py-5">
                     <div className="text-zinc-300 font-bold truncate max-w-[200px] flex items-center gap-3">
-                       <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(79,70,229,0.8)]"></div>
+                       <div className="w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-indigo-500/30"></div>
                        {asset.campaign.name}
                     </div>
                   </td>
@@ -98,7 +98,7 @@ export default async function LibraryPage() {
               {assets.length === 0 && (
                 <tr>
                    <td colSpan={5} className="py-24 text-center">
-                      <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner relative overflow-hidden group">
+                      <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner relative overflow-hidden group">
                         <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Library className="w-8 h-8 text-zinc-500 group-hover:text-white transition-colors relative z-10" />
                       </div>

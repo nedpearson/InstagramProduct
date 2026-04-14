@@ -13,7 +13,7 @@ export default async function SystemHealthPage() {
   });
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-700 ease-out">
+    <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
       
       {/* Ambient backgrounds */}
       <div className="mesh-bg-1" />
@@ -22,47 +22,47 @@ export default async function SystemHealthPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
         <div>
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-zinc-50 to-zinc-500">System Health</h1>
-          <p className="text-sm font-medium text-zinc-400 mt-1">Live telemetry and operational status of background services.</p>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-sm">System Health</h1>
+          <p className="text-sm font-bold tracking-wide text-zinc-400 mt-2 uppercase">Live telemetry and operational status of background services.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-100 font-bold text-sm rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] active:scale-95 flex items-center gap-2">
+          <button className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-sm rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-inner">
             <RefreshCw className="w-4 h-4 text-indigo-400" /> Refresh Telemetry
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-        <div className="bg-gradient-to-br from-[#120505] to-[#0A0505] border border-red-500/20 p-8 rounded-3xl relative overflow-hidden group hover:shadow-[0_0_30px_rgba(239,68,68,0.15)] transition-all duration-500">
-            <div className="absolute right-0 top-0 p-4 opacity-30 group-hover:scale-110 transition-transform duration-700"><MailMinus className="w-24 h-24 text-red-500/20" /></div>
+        <div className="glass-panel border border-red-500/20 p-7 rounded-3xl relative overflow-hidden group hover:border-red-500/30 transition-all duration-300">
+            <div className="absolute right-4 top-4 opacity-10"><MailMinus className="w-20 h-20 text-red-400" /></div>
             <div className="relative z-10 flex flex-col h-full">
-               <h3 className="text-red-400 font-bold mb-4 flex items-center gap-3 tracking-wide"><div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" /> Dead Letters</h3>
-               <div className="text-5xl font-black text-white tracking-tighter drop-shadow-md">{deadLetters}</div>
-               <p className="text-sm font-medium text-red-400/60 mt-2 mb-6">Jobs that exhausted all retry attempts.</p>
+               <h3 className="text-red-400 font-bold mb-4 flex items-center gap-3 tracking-wide text-sm"><div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Dead Letters</h3>
+               <div className="text-4xl font-black text-white tracking-tighter">{deadLetters}</div>
+               <p className="text-xs font-medium text-red-400/60 mt-2 mb-6">Jobs that exhausted all retry attempts.</p>
                <Link href="/inbox" className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-red-400 hover:text-red-300 transition-colors w-max group/link">
                   Triage in Inbox <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
                </Link>
             </div>
         </div>
         
-        <div className="bg-gradient-to-br from-[#120A05] to-[#0A0705] border border-amber-500/20 p-8 rounded-3xl relative overflow-hidden group hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] transition-all duration-500">
-            <div className="absolute right-0 top-0 p-4 opacity-30 group-hover:scale-110 transition-transform duration-700"><AlertCircle className="w-24 h-24 text-amber-500/20" /></div>
+        <div className="glass-panel border border-amber-500/20 p-7 rounded-3xl relative overflow-hidden group hover:border-amber-500/30 transition-all duration-300">
+            <div className="absolute right-4 top-4 opacity-10"><AlertCircle className="w-20 h-20 text-amber-400" /></div>
             <div className="relative z-10 flex flex-col h-full">
-               <h3 className="text-amber-400 font-bold mb-4 flex items-center gap-3 tracking-wide"><div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)]" /> Open Review Tasks</h3>
-               <div className="text-5xl font-black text-white tracking-tighter drop-shadow-md">{reviewTasks}</div>
-               <p className="text-sm font-medium text-amber-400/60 mt-2 mb-6">Actions halted awaiting human override.</p>
+               <h3 className="text-amber-400 font-bold mb-4 flex items-center gap-3 tracking-wide text-sm"><div className="w-2 h-2 rounded-full bg-amber-500" /> Open Review Tasks</h3>
+               <div className="text-4xl font-black text-white tracking-tighter">{reviewTasks}</div>
+               <p className="text-xs font-medium text-amber-400/60 mt-2 mb-6">Actions halted awaiting human override.</p>
                <Link href="/queue" className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-amber-400 hover:text-amber-300 transition-colors w-max group/link">
                   Process Queue <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
                </Link>
             </div>
         </div>
 
-        <div className="bg-gradient-to-br from-[#051208] to-[#050A06] border border-emerald-500/20 p-8 rounded-3xl relative overflow-hidden group hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] transition-all duration-500">
-            <div className="absolute right-0 top-0 p-4 opacity-30 group-hover:scale-110 transition-transform duration-700"><HeartPulse className="w-24 h-24 text-emerald-500/20" /></div>
+        <div className="glass-panel border border-emerald-500/20 p-7 rounded-3xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
+            <div className="absolute right-4 top-4 opacity-10"><HeartPulse className="w-20 h-20 text-emerald-400" /></div>
             <div className="relative z-10 flex flex-col h-full">
-               <h3 className="text-emerald-400 font-bold mb-4 flex items-center gap-3 tracking-wide"><div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" /> Watchdog Services</h3>
-               <div className="text-5xl font-black text-white tracking-tighter drop-shadow-md">{watchdogs.length}</div>
-               <p className="text-sm font-medium text-emerald-400/60 mt-2 mb-6">Background nodes currently checking in.</p>
+               <h3 className="text-emerald-400 font-bold mb-4 flex items-center gap-3 tracking-wide text-sm"><div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Watchdog Services</h3>
+               <div className="text-4xl font-black text-white tracking-tighter">{watchdogs.length}</div>
+               <p className="text-xs font-medium text-emerald-400/60 mt-2 mb-6">Background nodes currently checking in.</p>
                <span className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-emerald-400">
                   <ShieldCheck className="w-5 h-5 text-emerald-400" /> Systems Healthy
                </span>
