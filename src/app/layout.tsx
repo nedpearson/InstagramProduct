@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import { Sidebar } from '@/components/Sidebar';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Instagram Automation',
-  description: 'Automate your Instagram presence',
+  title: 'InstaFlow | Enterprise Automation',
+  description: 'Premium Instagram digital product automation platform.',
 };
 
 export default function RootLayout({
@@ -12,8 +16,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-[#fafafa] dark:bg-[#09090b] selection:bg-indigo-500/30`}>
+        <Sidebar>{children}</Sidebar>
+      </body>
     </html>
   );
 }
