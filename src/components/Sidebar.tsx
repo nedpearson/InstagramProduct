@@ -192,16 +192,18 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
               <Menu className="w-5 h-5" />
             </button>
             
-            {/* AI command bar */}
-            <div className="hidden md:flex items-center px-3.5 py-2 bg-white/[0.04] rounded-xl border border-white/[0.06] focus-within:bg-white/[0.07] focus-within:border-indigo-500/30 transition-all w-72 group shadow-inner">
-              <Search className="w-3.5 h-3.5 text-zinc-600 group-focus-within:text-indigo-400 mr-2.5 transition-colors shrink-0" />
-              <input
-                type="text"
-                placeholder="Search or run command..."
-                className="bg-transparent border-none outline-none text-[13px] font-medium w-full placeholder:text-zinc-600 text-white"
-              />
-              <div className="text-[9px] font-bold text-zinc-600 bg-white/[0.04] px-1.5 py-1 rounded border border-white/[0.06] tracking-widest shrink-0 leading-none">⌘K</div>
-            </div>
+            {/* AI command bar — opens command palette on click */}
+            <button
+              onClick={() => document.getElementById('command-palette-trigger')?.click()}
+              className="hidden md:flex items-center px-3.5 py-2 bg-white/[0.04] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] hover:border-indigo-500/25 transition-all w-72 group shadow-inner cursor-pointer"
+            >
+              <Search className="w-3.5 h-3.5 text-zinc-600 group-hover:text-indigo-400 mr-2.5 transition-colors shrink-0" />
+              <span className="text-[13px] font-medium text-zinc-600 group-hover:text-zinc-400 flex-1 text-left transition-colors">Search or run command...</span>
+              <div className="flex items-center gap-0.5 shrink-0">
+                <kbd className="text-[8px] font-black text-zinc-700 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06] leading-none">⌘</kbd>
+                <kbd className="text-[8px] font-black text-zinc-700 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06] leading-none">K</kbd>
+              </div>
+            </button>
           </div>
 
           <div className="flex items-center gap-3 relative z-10">
