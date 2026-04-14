@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  name           String?
+  hashedPassword String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  workspaces     Workspace[]
+  auditLogs      AuditLog[]
+}
+
+model Workspace {
+  id                String              @id @default(uuid())
+  name              String
+  userId            String
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  instagramAccounts InstagramAccount[]
+  products          Product[]
+  campaigns         Campaign[]
+  settings          Settings?
+  integrationTokens IntegrationToken[]
+  exports           Export[]
+}
+
+model InstagramAccount {
+  id             String       @id @default(uuid())
+  workspaceId    String
+  workspace      Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  igAccountId    String       @unique // Meta's IG ID
+  username       String
+  profilePicUrl  String?
+  accessToken    String?      // Encrypted in a real scenario
+  tokenExpiresAt DateTime?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Product {
+  id             String         @id @default(uuid())
+  workspaceId    String
+  workspace      Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  price          Float?
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  briefs         ProductBrief[]
+  campaigns      Campaign[]
+}
+
+model ProductBrief {
+  id                     String    @id @default(uuid())
+  productId              String
+  product                Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  niche                  String?
+  topic                  String?
+  targetAudience         String?
+  biggestPainPoint       String?
+  desiredTransformation  String?
+  productType            String?
+  leadMagnet             String?
+  ctaKeyword             String?
+  founderStory           String?
+  toneOfVoice            String?
+  proofSnippets          String?
+  doNotSayRestrictions   String?
+  postingFrequency       String?
+  campaignDurationDays   Int?
+  approvalMode           String    @default("semi-auto") // manual, semi-auto, full-auto
+  complianceNotes        String?
+  brandVoiceNotes        String?
+  hashtagStyle           String?
+  visualStyleNotes       String?
+  status                 String    @default("draft") // draft, active, archived
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+model Campaign {
+  id             String          @id @default(uuid())
+  workspaceId    String
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name           String
+  startDate      DateTime?
+  endDate        DateTime?
+  ctaKeywords    String?         // comma-separated
+  status         String          @default("draft")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  contentAssets  ContentAsset[]
+  leads          Lead[]
+  dmSequences    DmSequence[]
+}
+
+model ContentAsset {
+  id             String          @id @default(uuid())
+  campaignId     String
+  campaign       Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  title          String
+  assetType      String          // caption, reel, carousel, bio, idea, comment_reply, dm_message
+  status         String          @default("draft") // draft, approved, scheduled, published, archived
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  variants       AssetVariant[]
+}
+
+model AssetVariant {
+  id             String          @id @default(uuid())
+  assetId        String
+  asset          ContentAsset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  variantTag     String?         // short, warm, evergreen, etc.
+  hook           String?
+  body           String?
+  cta            String?
+  notes          String?         // performance notes, etc.
+  rating         Int?            // e.g. 1-5 for winning structures
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  schedules      Schedule[]
+  publishedPosts PublishedPost[]
+}
+
+model Schedule {
+  id             String          @id @default(uuid())
+  variantId      String
+  variant        AssetVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  scheduledFor   DateTime
+  status         String          @default("pending") // pending, published, failed
+  errorLog       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model PublishedPost {
+  id             String          @id @default(uuid())
+  variantId      String
+  variant        AssetVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  igPostId       String?         // ID from Instagram
+  publishedAt    DateTime        @default(now())
+  platformUrl    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  comments       Comment[]
+  leads          Lead[]          // leads generated from this post
+  analytics      AnalyticsSnapshot[]
+}
+
+model Comment {
+  id             String          @id @default(uuid())
+  postId         String
+  post           PublishedPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  igCommentId    String?         @unique
+  username       String
+  text           String
+  timestamp      DateTime        @default(now())
+  isLead         Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+}
+
+model Lead {
+  id             String          @id @default(uuid())
+  campaignId     String
+  campaign       Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  postId         String?
+  post           PublishedPost?  @relation(fields: [postId], references: [id], onDelete: SetNull)
+  igUsername     String
+  source         String          // comment, dm
+  keywordMatched String?
+  status         String          @default("new") // new, queued, contacted, responded, qualified, converted, closed
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  dmSequences    DmSequence[]
+}
+
+model DmSequence {
+  id             String          @id @default(uuid())
+  leadId         String
+  lead           Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  campaignId     String
+  campaign       Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  status         String          @default("pending") // pending, running, completed, halted
+  currentStep    Int             @default(1)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  events         DmEvent[]
+}
+
+model DmEvent {
+  id             String          @id @default(uuid())
+  sequenceId     String
+  sequence       DmSequence      @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+  eventType      String          // sent, received, failed
+  messageText    String?
+  timestamp      DateTime        @default(now())
+}
+
+model AnalyticsSnapshot {
+  id             String          @id @default(uuid())
+  postId         String
+  post           PublishedPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reach          Int             @default(0)
+  likes          Int             @default(0)
+  shares         Int             @default(0)
+  saves          Int             @default(0)
+  commentsCount  Int             @default(0)
+  profileVisits  Int             @default(0)
+  clicks         Int             @default(0)
+  conversions    Int             @default(0)
+  snapshotDate   DateTime        @default(now())
+}
+
+model ReviewTask {
+  id             String          @id @default(uuid())
+  entityType     String          // asset_variant, dm_message, failed_job
+  entityId       String
+  reason         String          // requires_approval, compliance_risk
+  status         String          @default("pending") // pending, approved, rejected
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model BackgroundJob {
+  id             String          @id @default(uuid())
+  jobType        String          // schedule_publisher, lead_finder, analytics_sync
+  payload        String?         // json
+  status         String          @default("queued") // queued, processing, completed, failed
+  attempts       Int             @default(0)
+  maxAttempts    Int             @default(3)
+  error          String?
+  runAt          DateTime        @default(now())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model AuditLog {
+  id             String          @id @default(uuid())
+  userId         String?
+  user           User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action         String
+  details        String?         // json
+  ipAddress      String?
+  createdAt      DateTime        @default(now())
+}
+
+model Settings {
+  id             String          @id @default(uuid())
+  workspaceId    String          @unique
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  automationMode String          @default("semi-auto") // manual, semi-auto, full-auto
+  timezone       String          @default("UTC")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model IntegrationToken {
+  id             String          @id @default(uuid())
+  workspaceId    String
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  provider       String          // openai, anthropic, etc.
+  encryptedToken String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Export {
+  id             String          @id @default(uuid())
+  workspaceId    String
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  filename       String
+  s3Url          String?
+  status         String          @default("processing")
+  createdAt      DateTime        @default(now())
+}
