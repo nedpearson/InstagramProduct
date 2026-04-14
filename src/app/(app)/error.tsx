@@ -1,5 +1,7 @@
 'use client';
 
+import { AlertTriangle, RotateCcw } from 'lucide-react';
+
 export default function ErrorBoundary({
   error,
   reset,
@@ -8,21 +10,30 @@ export default function ErrorBoundary({
   reset: () => void;
 }) {
   return (
-    <div className="flex items-center justify-center min-h-[60vh] p-4 text-center">
-      <div className="max-w-md w-full bg-white dark:bg-zinc-900 border border-red-100 dark:border-red-900/30 p-8 rounded-xl shadow-sm">
-        <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+    <div className="flex items-center justify-center min-h-[60vh] p-6 relative">
+      <div className="mesh-bg-1" />
+      <div className="relative z-10 max-w-md w-full glass-panel-ai border border-red-500/20 p-8 rounded-2xl shadow-xl text-center">
+        {/* Icon */}
+        <div className="w-14 h-14 bg-red-500/[0.08] border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-inner">
+          <AlertTriangle className="w-6 h-6 text-red-400" />
         </div>
-        <h2 className="text-xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">Something went wrong</h2>
-        <p className="text-sm text-zinc-500 mb-6">{error.message || "An unexpected system error occurred."}</p>
+
+        <div className="ai-section-label mb-3 justify-center flex">System Exception</div>
+        <h2 className="text-xl font-black text-white tracking-tight mb-2">Something went wrong</h2>
+        <p className="text-[13px] text-zinc-500 font-medium leading-relaxed mb-7 max-w-xs mx-auto">
+          {error.message || 'An unexpected error occurred in the neural pipeline.'}
+        </p>
+
         <button
           onClick={() => reset()}
-          className="w-full px-4 py-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white text-white font-medium rounded-md transition"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95"
         >
-          Try again
+          <RotateCcw className="w-3.5 h-3.5" /> Retry
         </button>
+
+        {error.digest && (
+          <p className="mt-5 text-[10px] font-mono text-zinc-700">ref: {error.digest}</p>
+        )}
       </div>
     </div>
   );
