@@ -126,3 +126,34 @@ export async function createBriefAction(productId: string) {
   
   revalidatePath('/briefs');
 }
+
+export async function scheduleContentAction(formData: FormData) {
+  const variantId = formData.get('variantId') as string;
+  const scheduledFor = formData.get('scheduledFor') as string;
+
+  if (!variantId || !scheduledFor) throw new Error('Missing variantId or scheduledFor');
+
+  const variant = await prisma.assetVariant.findUnique({
+    where: { id: variantId },
+    include: { asset: true }
+  });
+  if (!variant) throw new Error('Variant not found');
+
+  await prisma.schedule.create({
+    data: {
+      variantId,
+      scheduledFor: new Date(scheduledFor),
+      status: 'pending',
+    }
+  });
+
+  await prisma.contentAsset.update({
+    where: { id: variant.assetId },
+    data: { status: 'scheduled' }
+  });
+
+  revalidatePath('/calendar');
+  revalidatePath('/overview');
+  revalidatePath('/library');
+}
+

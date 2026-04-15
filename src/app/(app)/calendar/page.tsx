@@ -1,13 +1,17 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, View, Plus, MapPin } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, View, MapPin } from 'lucide-react';
+import { ScheduleModal } from '@/components/ScheduleModal';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CalendarPage() {
   const assets = await prisma.contentAsset.findMany({
     where: { status: 'approved' },
-    select: { id: true, title: true, assetType: true, variants: true }
+    select: {
+      id: true, title: true, assetType: true,
+      variants: { select: { id: true, variantTag: true } }
+    }
   });
 
   const schedules = await prisma.schedule.findMany({
@@ -35,9 +39,7 @@ export default async function CalendarPage() {
              <span className="px-4 text-sm font-bold text-zinc-100">This Week</span>
              <button className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"><ChevronRight className="w-4 h-4" /></button>
           </div>
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 flex items-center gap-2 transition-all active:scale-95">
-            <Plus className="w-3.5 h-3.5" /> Schedule Content
-          </button>
+          <ScheduleModal assets={assets} />
         </div>
       </div>
 
