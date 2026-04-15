@@ -125,13 +125,21 @@ export default async function SettingsPage({ searchParams }: { searchParams: { s
                 <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[12px] rounded-xl shadow-inner whitespace-nowrap">
                   <CheckCircle2 className="w-4 h-4" /> Configured
                 </div>
-              ) : (
+              ) : process.env.META_APP_ID ? (
                 <a
-                  href={`https://www.facebook.com/v19.0/dialog/oauth?client_id=${process.env.META_APP_ID || ''}&redirect_uri=http://localhost:3000/api/auth/instagram/callback&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement`}
+                  href={`https://www.facebook.com/v19.0/dialog/oauth?client_id=${process.env.META_APP_ID}&redirect_uri=${encodeURIComponent(process.env.META_REDIRECT_URI || 'http://localhost:3000/api/auth/instagram/callback')}&scope=instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement`}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-[13px] rounded-xl transition-all shadow-lg hover:shadow-blue-500/20 active:scale-95 whitespace-nowrap"
                 >
                   Login with Meta
                 </a>
+              ) : (
+                <div className="flex flex-col items-start gap-2">
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-500/10 border border-amber-500/25 rounded-xl">
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span className="text-[12px] font-bold text-amber-400">META_APP_ID not set in .env</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-600 font-medium">Add your Facebook App ID to your .env file to enable OAuth.</p>
+                </div>
               )}
             </div>
 
