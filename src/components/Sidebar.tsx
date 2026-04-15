@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, FileText, Package, Library, Calendar,
+  LayoutDashboard, FileText, Package, Library, Calendar, Eye,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
   Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem
 } from 'lucide-react';
@@ -16,6 +16,7 @@ const navigation = [
   { name: 'Products', href: '/products', icon: Package },
   { name: 'Content Library', href: '/library', icon: Library },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
+  { name: 'Post Preview', href: '/preview', icon: Eye },
 ];
 
 const operations = [
