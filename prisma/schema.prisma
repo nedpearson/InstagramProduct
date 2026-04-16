@@ -108,9 +108,27 @@ model ProductBrief {
   hashtagStyle          String?
   visualStyleNotes      String?
   blueprintData         String?    // Detailed $10k AI Strategy Blueprint (JSON stringified)
+  competitors           Competitor[] // Live Competitor Intelligence tracking
   status                String   @default("draft") // draft, active, archived
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+model Competitor {
+  id               String   @id @default(uuid())
+  briefId          String
+  brief            ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  brandName        String
+  handle           String?
+  website          String?
+  threatScore      Int      @default(0)
+  followers        Int      @default(0)
+  positioning      String?
+  intelligenceData String?  // JSON with SWOT, Gaps, Exploitation, Offers, Tracking
+  isTrackingLive   Boolean  @default(true)
+  lastScannedAt    DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model Campaign {

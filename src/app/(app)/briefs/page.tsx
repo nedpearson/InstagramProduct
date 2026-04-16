@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function BriefsPage({ searchParams }: { searchParams: Promise<{ edit?: string, compare?: string }> }) {
   const briefs = await prisma.productBrief.findMany({
-    include: { product: true },
+    include: { product: true, competitors: { orderBy: { threatScore: 'desc' }} },
     orderBy: { createdAt: 'desc' },
   });
 

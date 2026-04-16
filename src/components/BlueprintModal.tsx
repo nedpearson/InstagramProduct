@@ -6,13 +6,18 @@ import {
   Building2, Users, Target, Zap, LayoutTemplate, 
   TrendingUp, ShieldCheck, Cog, CalendarDays, BarChart,
   Download, Copy, RefreshCw, X, ChevronRight, Activity, Globe,
-  ShieldAlert, AlertTriangle, Lightbulb, Hexagon, Layers
+  ShieldAlert, AlertTriangle, Lightbulb, Hexagon, Layers, Plus, Database, Crosshair
 } from 'lucide-react';
-import { generateStrategicBlueprintAction } from '@/app/(app)/actions';
+import { generateStrategicBlueprintAction, analyzeCompetitorAction } from '@/app/(app)/actions';
 
 export function BlueprintModal({ brief }: { brief: any }) {
   const [activeTab, setActiveTab] = useState('intelligence');
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Competitor Tracking State
+  const [isAddingCompetitor, setIsAddingCompetitor] = useState(false);
+  const [compName, setCompName] = useState('');
+  const [compHandle, setCompHandle] = useState('');
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -25,13 +30,28 @@ export function BlueprintModal({ brief }: { brief: any }) {
     }
   };
 
+  const handleAddCompetitor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!compName) return;
+    setIsAddingCompetitor(true);
+    try {
+      await analyzeCompetitorAction(brief.id, { name: compName, url_handle: compHandle });
+      setCompName('');
+      setCompHandle('');
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsAddingCompetitor(false);
+    }
+  };
+
   const blueprint = brief.blueprintData ? JSON.parse(brief.blueprintData) : null;
 
   const tabs = [
     { id: 'intelligence', label: 'Opportunity Intelligence', icon: Hexagon },
+    { id: 'competitorTracker', label: 'Live Competitor Radar', icon: Crosshair },
     { id: 'marketOverview', label: 'Market Overview', icon: Globe },
     { id: 'audienceAvatar', label: 'Audience Avatar', icon: Users },
-    { id: 'competitorAnalysis', label: 'Competitors', icon: Building2 },
     { id: 'blueOceanStrategy', label: 'Blue Ocean', icon: Target },
     { id: 'contentStrategy', label: 'Content', icon: LayoutTemplate },
     { id: 'conversionStrategy', label: 'Conversion', icon: Zap },
@@ -144,7 +164,6 @@ export function BlueprintModal({ brief }: { brief: any }) {
           <div className="flex-1 overflow-y-auto bg-zinc-950/50">
             {activeTab === 'intelligence' ? (
               <div className="p-10 max-w-5xl mx-auto space-y-10">
-                
                 {/* Score Header */}
                 <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
                   <div>
@@ -254,12 +273,148 @@ export function BlueprintModal({ brief }: { brief: any }) {
                 </div>
 
               </div>
+            ) : activeTab === 'competitorTracker' ? (
+              
+              <div className="p-10 max-w-6xl mx-auto space-y-10">
+                <div className="flex items-center justify-between">
+                  <div>
+                     <h3 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                       <Crosshair className="w-8 h-8 text-rose-500" /> Live Competitor Radar
+                     </h3>
+                     <p className="text-zinc-400 mt-2 font-medium">Autonomous tracking of market gaps, funnel leaks, and positioning holes of competitors.</p>
+                  </div>
+                </div>
+
+                <div className="bg-black/20 border border-white/5 p-6 rounded-3xl">
+                  <form onSubmit={handleAddCompetitor} className="flex gap-4">
+                    <input 
+                      type="text" 
+                      placeholder="Brand Name (e.g. Hormozi)" 
+                      value={compName}
+                      onChange={e => setCompName(e.target.value)}
+                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-5 text-white placeholder-zinc-500 outline-none focus:border-indigo-500/50"
+                      required
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="@handle (optional)" 
+                      value={compHandle}
+                      onChange={e => setCompHandle(e.target.value)}
+                      className="w-48 bg-white/5 border border-white/10 rounded-xl px-5 text-white placeholder-zinc-500 outline-none focus:border-indigo-500/50"
+                    />
+                    <button 
+                      type="submit" 
+                      disabled={isAddingCompetitor}
+                      className="px-6 py-3 bg-white text-black font-black rounded-xl hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                    >
+                      {isAddingCompetitor ? <Activity className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                      Deploy AI Spy
+                    </button>
+                  </form>
+                </div>
+
+                {/* Viral Trend Tracker */}
+                {brief.competitors && brief.competitors.length > 0 && (
+                  <div className="bg-indigo-500/5 border border-indigo-500/10 rounded-3xl p-6">
+                     <div className="flex items-center gap-3 mb-6">
+                        <Activity className="w-5 h-5 text-indigo-400" />
+                        <h4 className="text-sm font-black uppercase tracking-widest text-indigo-400">Live Trend Tracker</h4>
+                     </div>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                           <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">Emerging Hook</div>
+                           <div className="text-sm font-bold text-white">"The 3 things they refuse to tell you about..."</div>
+                           <div className="text-xs text-emerald-400 mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +140% adoption</div>
+                        </div>
+                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                           <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">Dying Format</div>
+                           <div className="text-sm font-bold text-white">Generic Lip-sync POV Reels</div>
+                           <div className="text-xs text-red-400 mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3 rotate-180" /> -65% engagement</div>
+                        </div>
+                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                           <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">Blue Ocean Topic</div>
+                           <div className="text-sm font-bold text-white">Advanced Systemization</div>
+                           <div className="text-xs text-fuchsia-400 mt-2 flex items-center gap-1"><Zap className="w-3 h-3" /> 0.8% Saturation</div>
+                        </div>
+                     </div>
+                  </div>
+                )}
+
+                {(!brief.competitors || brief.competitors.length === 0) ? (
+                   <div className="py-20 text-center flex flex-col items-center">
+                     <Database className="w-16 h-16 text-white/[0.05] mb-4" />
+                     <h4 className="text-xl font-bold text-white">No active targets</h4>
+                     <p className="text-zinc-500 mt-2 max-w-sm">Deploy the AI spy by entering a competitor above. We'll aggressively scan their positioning and find gaps.</p>
+                   </div>
+                ) : (
+                  <div className="space-y-6">
+                    {brief.competitors.map((comp: any) => {
+                      const data = comp.intelligenceData ? JSON.parse(comp.intelligenceData) : null;
+                      return (
+                        <div key={comp.id} className="bg-white/[0.02] border border-white/[0.05] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+                           <div className="p-6 border-b border-white/[0.05] bg-black/40 flex justify-between items-center">
+                              <div className="flex items-center gap-5">
+                                 <div className="w-14 h-14 bg-gradient-to-br from-rose-500/20 to-orange-500/20 rounded-full border border-rose-500/30 flex items-center justify-center shadow-inner">
+                                   <Building2 className="w-6 h-6 text-rose-400" />
+                                 </div>
+                                 <div>
+                                    <h4 className="text-2xl font-black text-white">{comp.brandName} <span className="text-base text-zinc-500 font-medium ml-2">{comp.handle}</span></h4>
+                                    <p className="text-sm font-medium text-amber-400/80 tracking-wide mt-1">{data?.positioning}</p>
+                                 </div>
+                              </div>
+                              <div className="text-right">
+                                 <div className="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Threat Level</div>
+                                 <div className={`text-4xl font-black ${comp.threatScore > 80 ? 'text-rose-500' : 'text-amber-500'}`}>{comp.threatScore}</div>
+                              </div>
+                           </div>
+                           
+                           {data && (
+                             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-zinc-950/80">
+                               
+                               <div className="col-span-1 md:col-span-2 grid grid-cols-2 gap-6">
+                                 <div>
+                                   <h5 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-400 mb-3"><TrendingUp className="w-4 h-4"/> Key Strengths</h5>
+                                   <ul className="space-y-3">
+                                      {data.strengths?.map((s: string, i: number) => (
+                                         <li key={i} className="text-zinc-300 text-[13px] flex items-start gap-2"><span className="text-emerald-500/50 mt-0.5">•</span> {s}</li>
+                                      ))}
+                                   </ul>
+                                 </div>
+                                 <div>
+                                   <h5 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-400 mb-3"><AlertTriangle className="w-4 h-4"/> Critical Flaws</h5>
+                                   <ul className="space-y-3">
+                                      {data.weaknesses?.map((s: string, i: number) => (
+                                         <li key={i} className="text-zinc-300 text-[13px] flex items-start gap-2"><span className="text-red-500/50 mt-0.5">•</span> {s}</li>
+                                      ))}
+                                   </ul>
+                                 </div>
+                               </div>
+
+                               <div className="bg-rose-500/5 border border-rose-500/10 p-5 rounded-2xl flex flex-col justify-between">
+                                  <div>
+                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-rose-400 mb-3">🔥 Exploitation Strategy</h5>
+                                    <p className="text-zinc-200 text-sm leading-relaxed">{data.exploitation}</p>
+                                  </div>
+                                  <div className="mt-4 pt-4 border-t border-rose-500/20 flex justify-between items-center text-xs font-bold text-rose-300">
+                                    <span>Followers Mined: {comp.followers.toLocaleString()}</span>
+                                  </div>
+                               </div>
+
+                             </div>
+                           )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
             ) : (
               // Standard Sections
               <div className="p-10 lg:p-14 max-w-3xl mx-auto">
                 <h3 className="text-3xl font-black text-white mb-8 border-b border-white/10 pb-4">{activeSection?.label}</h3>
                 <div className="prose prose-invert prose-indigo max-w-none">
-                  {blueprint.sections.find((s: any) => s.id === activeTab)?.content.split('\n').map((para: string, idx: number) => {
+                  {blueprint.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').map((para: string, idx: number) => {
                      if (para.trim().length === 0) return null;
                      const colonMatch = para.match(/^([^:]+:)(.*)$/);
                      if (colonMatch) {

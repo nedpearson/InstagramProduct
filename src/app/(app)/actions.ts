@@ -319,3 +319,44 @@ export async function generateStrategicBlueprintAction(briefId: string) {
 
   revalidatePath('/briefs');
 }
+
+export async function analyzeCompetitorAction(briefId: string, inputData: { name: string, url_handle?: string }) {
+  // Simulate AI intensive scraping & analysis
+  const threatScore = Math.floor(Math.random() * 40) + 60; // 60-99
+  const followers = Math.floor(Math.random() * 850000) + 15000;
+  
+  const intelligenceData = {
+    positioning: "Primarily targets beginners with low-ticket info products. Heavy reliance on 2022-style short-form hooks.",
+    themes: ["Motivation", "Basic How-To's", "Lifestyle Flexing"],
+    strengths: [
+      "Consistent daily posting cadence",
+      "High perceived authority through follower volume",
+      "Strong top-of-funnel reach"
+    ],
+    weaknesses: [
+      "Extremely low engagement depth (bots/inactive)",
+      "Leaky funnel: no distinct mid-ticket continuity",
+      "Messaging is becoming commoditized"
+    ],
+    opportunities: [
+      "Underserved intermediate/advanced audience",
+      "Lack of direct 1-to-1 conversion mechanisms in their DMs",
+      "Poor aesthetic branding allows us to undercut them on perceived value"
+    ],
+    exploitation: "Overpower their scattergun approach with a laser-focused VSL funnel. Position our brand as the 'Next Step' for their audience once they outgrow this competitor's basic advice. Specifically attack their most frequent hook framework."
+  };
+
+  await prisma.competitor.create({
+    data: {
+      briefId,
+      brandName: inputData.name,
+      handle: inputData.url_handle?.startsWith('@') ? inputData.url_handle : `@${inputData.url_handle || inputData.name.toLowerCase().replace(/\\s/g, '')}`,
+      threatScore,
+      followers,
+      positioning: intelligenceData.positioning,
+      intelligenceData: JSON.stringify(intelligenceData),
+    }
+  });
+
+  revalidatePath('/briefs');
+}
