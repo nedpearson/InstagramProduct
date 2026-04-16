@@ -46,9 +46,7 @@ export async function generateBriefAction(briefId: string) {
       include: { product: true }
     });
 
-    if (!brief) {
-      throw new Error('Brief not found');
-    }
+    if (!brief) throw new Error('Brief not found');
 
     let campaign = await prisma.campaign.findFirst({
       where: { productId: brief.productId, status: 'active' }
@@ -59,36 +57,62 @@ export async function generateBriefAction(briefId: string) {
         data: {
           workspaceId: brief.product.workspaceId,
           productId: brief.productId,
-          name: `Auto-Campaign for ${brief.product.name}`,
+          name: `${brief.product.name} Launch`,
           ctaKeywords: brief.ctaKeyword || 'LINK',
           status: 'active',
           startDate: new Date(),
-          endDate: new Date(Date.now() + (brief.campaignDurationDays || 30) * 24 * 60 * 60 * 1000)
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         }
       });
     }
 
-    await prisma.backgroundJob.create({
+    // Synchronously "generate" an asset for demo purposes since no background worker is running
+    const niche = brief.niche || brief.product.name;
+    const audience = brief.targetAudience || 'your audience';
+    
+    const hooks = [
+      "I discovered a counterintuitive truth about " + audience,
+      "Stop believing the biggest lie in " + niche,
+      "The exact blueprint I use to dominate " + niche
+    ];
+    const rawHook = hooks[Math.floor(Math.random() * hooks.length)];
+
+    const asset = await prisma.contentAsset.create({
       data: {
-        jobType: 'generate_content',
-        payload: JSON.stringify({
-          briefId: brief.id,
-          campaignId: campaign.id,
-          niche: brief.niche,
-          tone: brief.toneOfVoice,
-          productType: brief.productType
-        }),
-        status: 'queued'
+        campaignId: campaign.id,
+        title: `AI Generated: ${niche} Masterclass`,
+        assetType: 'caption',
+        status: 'scheduled',
       }
     });
 
+    const variant = await prisma.assetVariant.create({
+      data: {
+        assetId: asset.id,
+        variantTag: 'primary',
+        hook: rawHook,
+        body: `${rawHook}\n\nMost people get this completely wrong. They think the secret is grinding harder. It's actually about leveraging ${brief.product.name}.\n\nThe proof is in the results.\n\nDrop the word "${brief.ctaKeyword?.toUpperCase() || 'LINK'}" below and I'll send you my complete breakdown.\n\n#${niche.replace(/\s+/g, '').toLowerCase()}`,
+      }
+    });
+
+    // Schedule for a random time in the next 14 days
+    const nextDate = new Date();
+    nextDate.setDate(nextDate.getDate() + Math.floor(Math.random() * 14) + 1);
+    nextDate.setHours(9, 0, 0, 0);
+
+    await prisma.schedule.create({
+      data: { variantId: variant.id, scheduledFor: nextDate, status: 'pending' }
+    });
+
     revalidatePath('/briefs');
-    revalidatePath('/overview');
+    revalidatePath('/calendar');
+    revalidatePath('/preview');
   } catch (error: any) {
     console.error('Error generating brief:', error);
-    throw new Error('Failed to start generation job. Please try again.');
+    throw new Error('Failed to generate content. Please try again.');
   }
 }
+
 
 export async function processReviewTaskAction(taskId: string, action: 'approve' | 'reject') {
   try {

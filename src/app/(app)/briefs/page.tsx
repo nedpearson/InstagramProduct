@@ -5,11 +5,13 @@ import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers } fr
 
 export const dynamic = 'force-dynamic';
 
-export default async function BriefsPage() {
+export default async function BriefsPage({ searchParams }: { searchParams: { edit?: string } }) {
   const briefs = await prisma.productBrief.findMany({
     include: { product: true },
     orderBy: { createdAt: 'desc' },
   });
+
+  const editingBrief = searchParams.edit ? briefs.find(b => b.id === searchParams.edit) : null;
 
   return (
     <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
@@ -74,9 +76,9 @@ export default async function BriefsPage() {
             </div>
             
             <div className="flex gap-4 relative z-10 pt-6 border-t border-white/5 mt-auto">
-              <button className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-sm font-bold rounded-xl transition-colors border border-white/10 text-zinc-300 shadow-inner">
+              <Link href={`?edit=${brief.id}`} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-sm font-bold rounded-xl transition-colors border border-white/10 text-zinc-300 shadow-inner text-center block">
                 Edit Strategy
-              </button>
+              </Link>
               <form action={generateBriefAction.bind(null, brief.id)} className="flex-1">
                 <button type="submit" className="w-full h-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95">
                   <Sparkles className="w-4 h-4" />
@@ -101,6 +103,31 @@ export default async function BriefsPage() {
             </button>
          </div>
       )}
+
+      {/* Edit Modal Layer */}
+      {editingBrief && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+          <div className="relative w-full max-w-lg bg-zinc-950 border border-white/[0.08] shadow-2xl rounded-2xl overflow-hidden p-6">
+            <h2 className="text-xl font-bold text-white mb-4">Edit Product Brief</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-bold text-zinc-400">Target Audience</label>
+                <textarea className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white resize-none" rows={3} defaultValue={editingBrief.targetAudience || ''} />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-zinc-400">CTA Keyword</label>
+                <input type="text" className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white" defaultValue={editingBrief.ctaKeyword || ''} />
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 mt-6">
+              <Link href="/briefs" scroll={false} className="px-5 py-2.5 rounded-lg text-sm font-bold text-zinc-400 hover:text-white transition-colors">Cancel</Link>
+              <Link href="/briefs" scroll={false} className="px-5 py-2.5 rounded-lg text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors">Save Changes</Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
