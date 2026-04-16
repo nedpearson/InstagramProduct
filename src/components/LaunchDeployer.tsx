@@ -14,7 +14,7 @@ export default function LaunchDeployer({ workspaceId, products }: { workspaceId:
      try {
          // The DeployEngine inherently analyzes trends to pick the best product if none specified, 
          // but for precision we can pass the explicit workspace.
-         const result = await deployBestOpportunityAction(workspaceId, autonomyMode);
+         const result = await deployBestOpportunityAction(workspaceId, autonomyMode, selectedProductId);
          setResultData(result);
          
          if (autonomyMode === 'preview') {

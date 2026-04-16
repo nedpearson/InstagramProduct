@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { logAgentActivity } from '@/lib/orchestratorLogs';
+import { generateBriefAction } from '@/app/(app)/actions';
 
 export async function runExecutionActivationAgent(briefId: string) {
   try {
@@ -15,7 +16,10 @@ export async function runExecutionActivationAgent(briefId: string) {
        ]
     });
 
-    await logAgentActivity(briefId, 'Execution Activation Agent', `Generated 2 immediate execution plans covering funnel & content.`, 'completed');
+    // Actually trigger automated asset creation on the active calendar
+    await generateBriefAction(briefId);
+
+    await logAgentActivity(briefId, 'Execution Activation Agent', `Generated 2 immediate execution plans covering funnel & content. Asset mapped to Content Calendar.`, 'completed');
     return { success: true };
   } catch (error: any) {
     await logAgentActivity(briefId, 'Execution Activation Agent', 'Execution Planning Failed', 'failed', error.message);

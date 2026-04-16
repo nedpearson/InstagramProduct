@@ -2,13 +2,14 @@ import { Rocket, Zap, Clock, PackageCheck, Target } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import LaunchDeployer from '@/components/LaunchDeployer';
+import ScrollButton from '@/components/ScrollButton';
 
 export const dynamic = 'force-dynamic';
 
 export default async function LaunchesPage() {
   const launches = await prisma.launch.findMany({
     orderBy: { targetDate: 'asc' }
-  });
+  }).catch(() => []); // Fallback array if table doesn't exist
   
   const workspace = await prisma.workspace.findFirst();
   const products = workspace ? await prisma.product.findMany({ where: { workspaceId: workspace.id } }) : [];
@@ -29,12 +30,12 @@ export default async function LaunchesPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-white text-[13px] font-semibold rounded-xl transition-all duration-200 shadow-inner">
+          <ScrollButton targetId="deployer" className="px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-white text-[13px] font-semibold rounded-xl transition-all duration-200 shadow-inner">
             Run Simulation
-          </button>
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 group active:scale-95">
+          </ScrollButton>
+          <ScrollButton targetId="deployer" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 group active:scale-95">
             <Zap className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Plan Drop
-          </button>
+          </ScrollButton>
         </div>
       </div>
 
@@ -53,7 +54,7 @@ export default async function LaunchesPage() {
          </div>
       </div>
 
-      <div className="relative z-10 w-full mt-6">
+      <div id="deployer" className="relative z-10 w-full mt-6 scroll-mt-24">
         <LaunchDeployer 
            workspaceId={workspace?.id || ''} 
            products={products} 

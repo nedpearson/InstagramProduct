@@ -7,12 +7,13 @@ import {
   LayoutDashboard, FileText, Package, Library, Calendar, Eye,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
   Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem,
-  CircleDollarSign, Target
+  CircleDollarSign, Target, TrendingUp
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const navigation = [
   { name: 'Executive Command Center', href: '/overview', icon: LayoutDashboard },
+  { name: 'Profit Sector Matrix', href: '/sectors', icon: TrendingUp },
   { name: 'Market Domination', href: '/domination', icon: Target },
   { name: 'Trend Radar', href: '/trends', icon: Activity },
   { name: 'Competitor War Room', href: '/competitors', icon: ShieldCheck },
@@ -22,7 +23,9 @@ const navigation = [
 
 const operations = [
   { name: 'Automation Dashboard', href: '/automation', icon: LineChart },
+  { name: 'Content Calendar', href: '/calendar', icon: Calendar },
   { name: 'Content Library', href: '/library', icon: Library },
+  { name: 'Product Briefs', href: '/briefs', icon: FileText },
   { name: 'Review Queue', href: '/queue', icon: AlertCircle },
   { name: 'Settings / Admin', href: '/settings', icon: Settings },
 ];
@@ -229,18 +232,9 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto scrollbar-hide relative bg-transparent">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="h-full relative z-10"
-            >
+            <div className="h-full relative z-10">
               {children}
-            </motion.div>
-          </AnimatePresence>
+            </div>
         </main>
       </div>
     </div>

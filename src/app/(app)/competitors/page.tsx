@@ -1,5 +1,7 @@
 import { ShieldCheck, Zap, Crosshair, Users, Target, Activity } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { deployGlobalScoutAgentAction } from '@/app/(app)/actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,9 +26,11 @@ export default async function CompetitorsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 group active:scale-95">
-            <Zap className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Deploy Scout Agent
-          </button>
+          <form action={deployGlobalScoutAgentAction}>
+            <button type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 group active:scale-95">
+              <Zap className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Deploy Scout Agent
+            </button>
+          </form>
         </div>
       </div>
 

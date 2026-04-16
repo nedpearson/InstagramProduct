@@ -4,6 +4,7 @@ import { DashboardChart } from '@/components/DashboardChart';
 import { AIInsightsStrip } from '@/components/AIInsightsStrip';
 import { OnboardingChecklist } from '@/components/OnboardingChecklist';
 import { CMDKButton } from '@/components/CMDKButton';
+import { globalForceComputeAction } from '@/app/(app)/actions';
 import {
   Users, CalendarDays, CheckCircle2, AlertCircle, TrendingUp, Activity,
   Sparkles, MoreHorizontal, ShieldCheck, Zap, ArrowUpRight, Gauge
@@ -122,9 +123,11 @@ export default async function OverviewPage() {
           <Link href="/briefs" className="px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-white text-[13px] font-semibold rounded-xl transition-all duration-200 shadow-inner">
             New Funnel
           </Link>
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 group active:scale-95">
-            <Zap className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Start Compute
-          </button>
+          <form action={globalForceComputeAction}>
+            <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 group active:scale-95">
+              <Zap className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Start Compute
+            </button>
+          </form>
         </div>
       </div>
 

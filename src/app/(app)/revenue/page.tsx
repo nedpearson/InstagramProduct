@@ -1,5 +1,6 @@
 import { CircleDollarSign, LineChart, TrendingUp, AlertCircle } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,9 +65,9 @@ export default async function RevenuePage() {
                  )}
                  {funnels.map(f => (
                    <tr key={f.id} className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors group cursor-pointer">
-                      <td className="py-3 px-4 font-semibold text-white">{f.name} <span className="px-2 py-[2px] ml-2 text-[10px] bg-indigo-500/10 text-indigo-400 rounded uppercase">{f.type}</span></td>
-                      <td className="py-3 px-4 font-mono text-emerald-400">${f.expectedLTV?.toFixed(2) || '0.00'}</td>
-                      <td className="py-3 px-4 font-mono">${(f.expectedLTV || 0) * 0.1} <span className="text-[10px] text-zinc-500">(estimated)</span></td>
+                      <td className="py-3 px-4 font-semibold text-white">{f.name} <span className="px-2 py-[2px] ml-2 text-[10px] bg-indigo-500/10 text-indigo-400 rounded uppercase">PRODUCT</span></td>
+                      <td className="py-3 px-4 font-mono text-emerald-400">${((f as any).expectedLTV || 0).toFixed(2)}</td>
+                      <td className="py-3 px-4 font-mono">${((f as any).expectedLTV || 0) * 0.1} <span className="text-[10px] text-zinc-500">(estimated)</span></td>
                       <td className="py-3 px-4">
                          <span className="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs font-bold">14.2%</span>
                       </td>

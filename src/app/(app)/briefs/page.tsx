@@ -1,4 +1,4 @@
-import { generateBriefAction, createBriefAction } from '@/app/(app)/actions';
+import { generateBriefAction, createBriefAction, createWorkspaceBriefAction } from '@/app/(app)/actions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers, TrendingUp } from 'lucide-react';
@@ -37,12 +37,14 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
           <p className="text-sm font-medium text-zinc-500 mt-2">Configure foundational strategy and targets for AI generation.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="?compare=true" scroll={false} className="px-5 py-2.5 bg-black hover:bg-white/5 border border-white/10 text-zinc-300 font-bold text-[13px] rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 active:scale-95">
+          <Link href="/briefs?compare=true" scroll={false} className="px-5 py-2.5 bg-black hover:bg-white/5 border border-white/10 text-zinc-300 font-bold text-[13px] rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 active:scale-95">
             <Layers className="w-3.5 h-3.5 flex-shrink-0" /> Compare Strategies
           </Link>
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 active:scale-95">
-            <Plus className="w-3.5 h-3.5 flex-shrink-0" /> New Brief
-          </button>
+          <form action={createWorkspaceBriefAction}>
+            <button type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 active:scale-95">
+              <Plus className="w-3.5 h-3.5 flex-shrink-0" /> New Brief
+            </button>
+          </form>
         </div>
       </div>
 
@@ -123,9 +125,11 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
             <div className="ai-section-label mb-3">Product Briefs · Empty</div>
             <h3 className="text-xl font-black tracking-tight text-white mb-2">No briefs configured</h3>
             <p className="text-[13px] text-zinc-500 max-w-sm mb-7 font-medium leading-relaxed">Define your first target persona and product brief to kick off the asset generation pipeline.</p>
-            <button className="px-7 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-[13px] shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center gap-2 active:scale-95">
-               <Plus className="w-4 h-4" /> Create First Brief
-            </button>
+            <form action={createWorkspaceBriefAction}>
+              <button type="submit" className="px-7 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-[13px] shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center gap-2 active:scale-95">
+                 <Plus className="w-4 h-4" /> Create First Brief
+              </button>
+            </form>
          </div>
       )}
 

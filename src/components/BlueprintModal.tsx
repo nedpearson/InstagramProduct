@@ -495,25 +495,229 @@ export function BlueprintModal({ brief }: { brief: any }) {
                  </div>
               </div>
 
+            ) : activeTab === 'audienceAvatar' ? (
+              <div className="p-10 lg:p-14 max-w-5xl mx-auto space-y-10">
+                 <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">Psychographic & Demographic mapping.</p>
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').filter((l:string)=>l.trim()).map((para: string, idx: number) => {
+                       const colonMatch = para.match(/^([^:]+:)(.*)$/);
+                       if (colonMatch) {
+                         const title = colonMatch[1].replace(':','');
+                         const text = colonMatch[2];
+                         return (
+                           <div key={idx} className="bg-white/[0.02] border border-white/[0.05] p-6 rounded-3xl relative overflow-hidden group hover:border-indigo-500/30 transition-colors">
+                              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <h4 className="text-[11px] font-black uppercase tracking-widest text-indigo-400 mb-3">{title}</h4>
+                              <p className="text-zinc-300 font-medium leading-relaxed">{text}</p>
+                           </div>
+                         );
+                       }
+                       return <p key={idx} className="text-zinc-400 leading-relaxed">{para}</p>;
+                    })}
+                 </div>
+              </div>
+            ) : activeTab === 'contentStrategy' ? (
+              <div className="p-10 lg:p-14 max-w-6xl mx-auto space-y-10">
+                 <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-400">
+                      <LayoutTemplate className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">The 4-Pillar Organic Engine.</p>
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').filter((l:string)=>l.trim()).map((para: string, idx: number) => {
+                       const colonMatch = para.match(/^([^:]+:)(.*)$/);
+                       if (colonMatch) {
+                         const title = colonMatch[1].replace(':','');
+                         const text = colonMatch[2].split(' - ');
+                         return (
+                           <div key={idx} className="bg-gradient-to-br from-white/[0.03] to-transparent border border-white/[0.05] p-8 rounded-3xl group hover:border-fuchsia-500/30 transition-colors flex flex-col justify-between">
+                              <div>
+                                <h4 className="text-[12px] font-black uppercase tracking-widest text-zinc-500 mb-2">{title}</h4>
+                                <h5 className="text-xl font-bold text-white mb-4">{text[0]}</h5>
+                                <p className="text-zinc-400 text-sm leading-relaxed">{text[1] || text[0]}</p>
+                              </div>
+                              <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+                                 <span className="text-[10px] font-bold text-zinc-500 tracking-wider">PILLAR {idx + 1}</span>
+                                 <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-fuchsia-500 group-hover:text-white transition-all text-zinc-600"><ChevronRight className="w-4 h-4"/></div>
+                              </div>
+                           </div>
+                         );
+                       }
+                       return null;
+                    })}
+                 </div>
+              </div>
+            ) : activeTab === 'conversionStrategy' ? (
+              <div className="p-10 lg:p-14 max-w-5xl mx-auto space-y-10">
+                 <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <Zap className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">Live Funnel Flow Matrix.</p>
+                    </div>
+                 </div>
+                 
+                 <div className="flex flex-col gap-4 relative">
+                    <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-white/10 z-0"></div>
+                    {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').filter((l:string)=>l.trim()).map((para: string, idx: number) => {
+                       const colonMatch = para.match(/^([^:]+:)(.*)$/);
+                       if (colonMatch) {
+                         const title = colonMatch[1].replace(':','');
+                         const text = colonMatch[2];
+                         return (
+                           <div key={idx} className="relative z-10 flex items-center gap-6 group">
+                              <div className="w-12 h-12 shrink-0 rounded-full bg-zinc-950 border-4 border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black shadow-[0_0_15px_rgba(16,185,129,0.2)] group-hover:scale-110 transition-transform">{idx + 1}</div>
+                              <div className="flex-1 bg-white/[0.02] border border-white/[0.05] p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 group-hover:bg-white/[0.04]">
+                                 <div>
+                                   <div className="text-[10px] font-black tracking-widest uppercase text-emerald-500 mb-1">{title}</div>
+                                   <div className="text-lg font-bold text-white">{text}</div>
+                                 </div>
+                              </div>
+                           </div>
+                         );
+                       }
+                       return null;
+                    })}
+                 </div>
+              </div>
+            ) : activeTab === 'executionRoadmap' ? (
+              <div className="p-10 lg:p-14 max-w-5xl mx-auto space-y-10">
+                 <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                      <CalendarDays className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">Quarterly Action Timeline.</p>
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').filter((l:string)=>l.trim()).map((para: string, idx: number) => {
+                       const colonMatch = para.match(/^([^:]+:)(.*)$/);
+                       if (colonMatch) {
+                         const title = colonMatch[1].replace(':','');
+                         const text = colonMatch[2];
+                         return (
+                           <div key={idx} className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-3xl flex flex-col justify-between h-full hover:-translate-y-2 transition-transform duration-300">
+                              <div>
+                                <h4 className="text-xs font-black uppercase tracking-widest text-amber-500 mb-4">{title}</h4>
+                                <p className="text-zinc-200 text-sm font-medium leading-relaxed">{text}</p>
+                              </div>
+                              <div className="mt-6 pt-4 border-t border-amber-500/20 text-right">
+                                 <span className="inline-block w-8 h-1 bg-amber-500 rounded-full"></span>
+                              </div>
+                           </div>
+                         );
+                       }
+                       return null;
+                    })}
+                 </div>
+              </div>
+            ) : activeTab === 'automationScale' ? (
+              <div className="p-10 lg:p-14 max-w-5xl mx-auto space-y-10">
+                 <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+                      <Cog className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">Autonomous workflow routing design.</p>
+                    </div>
+                 </div>
+                 <div className="space-y-6">
+                    {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').filter((l:string)=>l.trim()).map((para: string, idx: number) => {
+                       const colonMatch = para.match(/^([^:]+:)(.*)$/);
+                       if (colonMatch) {
+                         const title = colonMatch[1].replace(':','');
+                         const textFragments = colonMatch[2].split('->');
+                         return (
+                           <div key={idx} className="bg-transparent border border-white/10 p-6 rounded-3xl flex flex-col gap-4">
+                              <h4 className="text-[11px] font-black uppercase tracking-widest text-cyan-400">{title}</h4>
+                              <div className="flex flex-wrap items-center gap-3">
+                                {textFragments.map((frag: string, fIdx: number) => (
+                                  <div key={fIdx} className="flex items-center gap-3">
+                                     <div className="px-4 py-2 bg-white/5 text-white font-medium rounded-xl border border-white/10">{frag.trim()}</div>
+                                     {fIdx < textFragments.length - 1 && <ChevronRight className="w-5 h-5 text-zinc-600" />}
+                                  </div>
+                                ))}
+                              </div>
+                           </div>
+                         );
+                       }
+                       return null;
+                    })}
+                 </div>
+              </div>
+            ) : activeTab === 'brandAuthority' ? (
+              <div className="p-10 lg:p-14 max-w-5xl mx-auto space-y-10">
+                 <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-rose-500/20 flex items-center justify-center text-rose-400">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">Visual & written positioning language.</p>
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').filter((l:string)=>l.trim()).map((para: string, idx: number) => {
+                       const colonMatch = para.match(/^([^:]+:)(.*)$/);
+                       if (colonMatch) {
+                         const title = colonMatch[1].replace(':','');
+                         const text = colonMatch[2];
+                         return (
+                           <div key={idx} className="bg-rose-500/[0.02] border border-rose-500/20 p-8 rounded-3xl relative">
+                              <h4 className="text-xs font-black uppercase tracking-widest text-rose-400 mb-4">{title}</h4>
+                              <p className="text-2xl text-white font-bold leading-tight decoration-rose-500/30 underline decoration-2 underline-offset-4">{text}</p>
+                           </div>
+                         );
+                       }
+                       return null;
+                    })}
+                 </div>
+              </div>
             ) : (
-              // Standard Sections
-              <div className="p-10 lg:p-14 max-w-3xl mx-auto">
-                <h3 className="text-3xl font-black text-white mb-8 border-b border-white/10 pb-4">{activeSection?.label}</h3>
-                <div className="prose prose-invert prose-indigo max-w-none">
+              // Standard Fallback for Blue Ocean / Market Overview
+              <div className="p-10 lg:p-14 max-w-4xl mx-auto space-y-8">
+                 <div className="flex items-center gap-4 mb-4 border-b border-white/5 pb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white/50">
+                      <Globe className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black text-white">{activeSection?.label}</h3>
+                      <p className="text-zinc-500">Extracted thematic intelligence.</p>
+                    </div>
+                 </div>
+                 
+                 <div className="prose prose-invert prose-indigo max-w-none prose-p:text-lg prose-p:leading-relaxed prose-p:text-zinc-300">
                   {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').map((para: string, idx: number) => {
                      if (para.trim().length === 0) return null;
                      const colonMatch = para.match(/^([^:]+:)(.*)$/);
                      if (colonMatch) {
                        return (
-                         <p key={idx} className="text-zinc-300 leading-relaxed mb-6 bg-white/[0.02] p-5 rounded-xl border border-white/[0.05]">
-                           <strong className="text-white font-black tracking-wide text-[15px]">{colonMatch[1]}</strong>
-                           <span className="block mt-2 opacity-90">{colonMatch[2]}</span>
-                         </p>
+                         <div key={idx} className="mb-8 bg-indigo-500/5 border-l-4 border-indigo-500 p-6 rounded-r-3xl">
+                           <h4 className="text-indigo-400 font-black tracking-wide text-sm uppercase mb-2">{colonMatch[1].replace(':', '')}</h4>
+                           <span className="block text-xl font-medium text-white">{colonMatch[2]}</span>
+                         </div>
                        );
                      }
-                     return <p key={idx} className="text-zinc-300 leading-relaxed mb-6">{para}</p>;
+                     return <p key={idx} className="mb-6">{para}</p>;
                   })}
-                </div>
+                 </div>
               </div>
             )}
           </div>

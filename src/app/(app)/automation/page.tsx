@@ -4,8 +4,8 @@ import { prisma } from '@/lib/prisma';
 export const dynamic = 'force-dynamic';
 
 export default async function AutomationPage() {
-  const jobs = await prisma.backgroundJob.findMany({
-    take: 10,
+  const jobs = await prisma.strategicJobQueue.findMany({
+    take: 50,
     orderBy: { createdAt: 'desc' }
   });
 

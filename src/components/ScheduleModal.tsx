@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { scheduleContentAction } from '@/app/(app)/actions';
 import { Plus, X, Calendar, Clock, Zap } from 'lucide-react';
 
@@ -17,6 +18,7 @@ interface ScheduleModalProps {
 
 export function ScheduleModal({ assets }: ScheduleModalProps) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [selectedAssetId, setSelectedAssetId] = useState('');
   const [selectedVariantId, setSelectedVariantId] = useState('');
   const [scheduledFor, setScheduledFor] = useState(() => {
@@ -27,6 +29,10 @@ export function ScheduleModal({ assets }: ScheduleModalProps) {
   });
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedAsset = assets.find(a => a.id === selectedAssetId);
 
@@ -59,8 +65,8 @@ export function ScheduleModal({ assets }: ScheduleModalProps) {
       </button>
 
       {/* Modal Overlay */}
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {open && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="relative w-full max-w-lg glass-panel-ai rounded-2xl border border-white/[0.1] shadow-2xl shadow-black/60 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
             {/* Header */}
@@ -151,7 +157,8 @@ export function ScheduleModal({ assets }: ScheduleModalProps) {
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

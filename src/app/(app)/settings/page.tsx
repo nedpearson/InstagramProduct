@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { saveManualTokenAction } from '@/app/(app)/actions';
+import { saveManualTokenAction, saveAutomationModeAction } from '@/app/(app)/actions';
 import { Fingerprint, Shield, Zap, Lock, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -58,11 +58,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: { s
             </div>
           </div>
 
-          <div className="p-6 md:p-8 space-y-5 max-w-3xl">
+          <form action={saveAutomationModeAction} className="p-6 md:p-8 space-y-5 max-w-3xl">
             <div>
               <label className="block text-[10px] font-bold mb-2.5 text-zinc-500 tracking-[0.15em] uppercase">Global Operating Mode</label>
               <div className="relative">
                 <select
+                  name="automationMode"
                   className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl py-3 px-4 text-[13px] font-semibold focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500/40 outline-none transition-all shadow-inner text-white appearance-none hover:bg-white/[0.05] cursor-pointer"
                   defaultValue={settings?.automationMode || 'semi-auto'}
                 >
@@ -78,10 +79,10 @@ export default async function SettingsPage({ searchParams }: { searchParams: { s
               </div>
             </div>
 
-            <button className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all active:scale-95">
+            <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all active:scale-95">
               Save Preferences
             </button>
-          </div>
+          </form>
         </div>
 
         {/* Module 2: Meta Integration */}

@@ -1,9 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { X, Layers, TrendingUp, Zap, ShieldCheck, Trophy } from 'lucide-react';
 
 export function CompareModal({ briefs }: { briefs: any[] }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Filter only briefs that have a blueprint generated
   const generatedBriefs = briefs
     .filter(b => b.blueprintData)
@@ -13,9 +21,11 @@ export function CompareModal({ briefs }: { briefs: any[] }) {
       data: JSON.parse(b.blueprintData)
     }));
 
+  if (!mounted) return null;
+
   if (generatedBriefs.length < 2) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+    return createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
         <div className="relative w-full max-w-md bg-zinc-950 border border-white/[0.08] shadow-2xl rounded-2xl p-8 text-center flex flex-col items-center">
           <Link href="/briefs" scroll={false} className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
@@ -30,7 +40,8 @@ export function CompareModal({ briefs }: { briefs: any[] }) {
             Close
           </Link>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
@@ -54,8 +65,8 @@ export function CompareModal({ briefs }: { briefs: any[] }) {
   const highestVirality = getWinner('Highest Virality', 'virality');
   const bestOverall = getWinner('Best Overall Opportunity', 'composite');
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" />
       <div className="relative w-full max-w-7xl h-[90vh] bg-zinc-950 border border-white/[0.08] shadow-2xl rounded-2xl overflow-hidden flex flex-col">
         
@@ -165,6 +176,7 @@ export function CompareModal({ briefs }: { briefs: any[] }) {
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
