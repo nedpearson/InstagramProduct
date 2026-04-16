@@ -17,7 +17,7 @@ async function main() {
   const workspace = await prisma.workspace.create({
     data: {
       name: 'Default Workspace',
-      user: { connect: { id: user.id } },
+      owner: { connect: { id: user.id } },
     },
   });
 

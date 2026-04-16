@@ -1,34 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
   Building2, Users, Target, Zap, LayoutTemplate, 
   TrendingUp, ShieldCheck, Cog, CalendarDays, BarChart,
   Download, Copy, RefreshCw, X, ChevronRight, Activity, Globe,
-  ShieldAlert, AlertTriangle, Lightbulb, Hexagon, Layers, Plus, Database, Crosshair
+  ShieldAlert, AlertTriangle, Lightbulb, Hexagon, Layers, Plus, Database, Crosshair, Terminal
 } from 'lucide-react';
 import { generateStrategicBlueprintAction, analyzeCompetitorAction } from '@/app/(app)/actions';
+import { createPortal } from 'react-dom';
 
 export function BlueprintModal({ brief }: { brief: any }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('intelligence');
-  const [isGenerating, setIsGenerating] = useState(false);
   
   // Competitor Tracking State
   const [isAddingCompetitor, setIsAddingCompetitor] = useState(false);
   const [compName, setCompName] = useState('');
   const [compHandle, setCompHandle] = useState('');
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const handleGenerate = async () => {
-    setIsGenerating(true);
-    try {
-      await generateStrategicBlueprintAction(brief.id);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsGenerating(false);
+  // Auto-refresh when processing
+  useEffect(() => {
+    if (brief.status === 'processing') {
+       const interval = setInterval(() => {
+          router.refresh();
+       }, 2000);
+       return () => clearInterval(interval);
     }
-  };
+  }, [brief.status, router]);
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +53,8 @@ export function BlueprintModal({ brief }: { brief: any }) {
   const tabs = [
     { id: 'intelligence', label: 'Opportunity Intelligence', icon: Hexagon },
     { id: 'competitorTracker', label: 'Live Competitor Radar', icon: Crosshair },
+    { id: 'agentLogs', label: 'Agent Activity Runbook', icon: Terminal },
+    { id: 'executionDeliverables', label: 'Execution Engine', icon: Target },
     { id: 'marketOverview', label: 'Market Overview', icon: Globe },
     { id: 'audienceAvatar', label: 'Audience Avatar', icon: Users },
     { id: 'blueOceanStrategy', label: 'Blue Ocean', icon: Target },
@@ -58,37 +63,32 @@ export function BlueprintModal({ brief }: { brief: any }) {
     { id: 'brandAuthority', label: 'Brand Authority', icon: ShieldCheck },
     { id: 'automationScale', label: 'Automation', icon: Cog },
     { id: 'executionRoadmap', label: '90-Day Roadmap', icon: CalendarDays },
-    { id: 'kpis', label: 'KPIs', icon: BarChart },
   ];
 
-  if (!blueprint) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+  const activeSection = tabs.find(t => t.id === activeTab);
+
+  if (!mounted) return null;
+
+  if (!blueprint && brief.status === 'draft') {
+    return createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
         <div className="relative w-full max-w-md bg-zinc-950 border border-white/[0.08] shadow-2xl rounded-2xl overflow-hidden p-8 text-center flex flex-col items-center">
           <Link href="/briefs" scroll={false} className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </Link>
-          <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 border border-indigo-500/20">
-            <TrendingUp className="w-8 h-8 text-indigo-400" />
+          <div className="w-16 h-16 bg-fuchsia-500/10 rounded-full flex items-center justify-center mb-6 border border-fuchsia-500/20">
+            <Activity className="w-8 h-8 text-fuchsia-400" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2">Strategy Not Generated</h2>
-          <p className="text-zinc-400 text-sm mb-8">Run the elite AI strategic consultant to build a $10k market domination blueprint for this product.</p>
-          <button 
-            onClick={handleGenerate} 
-            disabled={isGenerating}
-            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95 flex justify-center items-center gap-2"
-          >
-            {isGenerating ? <Activity className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
-            {isGenerating ? 'Analyzing Market...' : 'Generate $10k Blueprint'}
-          </button>
+          <h2 className="text-2xl font-black text-white mb-2">Awaiting Intelligence</h2>
+          <p className="text-zinc-400 text-sm mb-8">The AI agents require initial trigger to build out the autonomous strategy.</p>
         </div>
-      </div>
+      </div>, document.body
     );
   }
 
-  const activeSection = tabs.find(t => t.id === activeTab);
-  const oppInt = blueprint.opportunityIntelligence;
+  const isProcessing = brief.status === 'processing';
+  const oppInt = blueprint?.opportunityIntelligence;
 
   const getColorClass = (score: number) => {
     if (score >= 90) return 'text-fuchsia-400 border-fuchsia-500/30 bg-fuchsia-500/10 shadow-[0_0_15px_rgba(232,121,249,0.3)]';
@@ -104,29 +104,28 @@ export function BlueprintModal({ brief }: { brief: any }) {
     return 'bg-red-500';
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-lg" />
       <div className="relative w-full max-w-7xl h-[95vh] bg-zinc-950 border border-white/[0.08] shadow-2xl rounded-2xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/[0.05] bg-white/[0.02] shrink-0">
           <div>
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-400 text-[10px] uppercase font-black tracking-widest border border-indigo-500/30">Active Blueprint</span>
-              <h2 className="text-xl font-bold text-white">{brief.product?.name || brief.niche}</h2>
+              <span className="px-2.5 py-1 rounded bg-fuchsia-500/10 text-fuchsia-400 text-[10px] uppercase font-black tracking-widest border border-fuchsia-500/20 shadow-inner flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-fuchsia-500 rounded-full animate-pulse"></span> Autonomous Mode: ON
+              </span>
+              <h2 className="text-xl font-bold text-white relative flex items-center gap-2">
+                 {brief.product?.name || brief.niche} 
+                 {isProcessing && <span className="flex h-3 w-3 relative"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span></span>}
+              </h2>
             </div>
-            <p className="text-zinc-500 text-xs mt-1 font-medium">Auto-generated strategic execution plan for market domination.</p>
+            <p className="text-zinc-500 text-xs mt-1 font-medium">Orchestrated strategic execution plan. Continuously updated.</p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="?compare=true" scroll={false} className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2 border border-white/10" title="Compare Briefs">
               <Layers className="w-3.5 h-3.5" /> Compare Strategies
             </Link>
-            <button className="p-2 bg-white/5 hover:bg-white/10 text-zinc-400 rounded-lg transition-colors" title="Export PDF">
-              <Download className="w-4 h-4" />
-            </button>
-            <button onClick={handleGenerate} className="p-2 bg-white/5 hover:bg-white/10 text-zinc-400 rounded-lg transition-colors">
-              <RefreshCw className={isGenerating ? "w-4 h-4 animate-spin" : "w-4 h-4"} />
-            </button>
             <Link href="/briefs" scroll={false} className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors ml-2">
               <X className="w-4 h-4" />
             </Link>
@@ -140,6 +139,9 @@ export function BlueprintModal({ brief }: { brief: any }) {
             {tabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
+              
+              if (isProcessing && tab.id !== 'agentLogs') return null; // Only show logs when processing
+              
               return (
                 <button
                   key={tab.id}
@@ -162,7 +164,40 @@ export function BlueprintModal({ brief }: { brief: any }) {
 
           {/* Tab Content */}
           <div className="flex-1 overflow-y-auto bg-zinc-950/50">
-            {activeTab === 'intelligence' ? (
+            {isProcessing || activeTab === 'agentLogs' ? (
+              
+              <div className="p-10 max-w-4xl mx-auto space-y-8">
+                 <div>
+                    <h3 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                      <Terminal className="w-8 h-8 text-fuchsia-400" /> Strategic Command Orchestrator
+                    </h3>
+                    <p className="text-zinc-400 mt-2 font-medium">Live background telemetry of specialized AI agents running market intelligence routines.</p>
+                 </div>
+                 
+                 <div className="bg-black/40 border border-white/5 rounded-2xl p-6 font-mono text-sm space-y-4 shadow-inner relative overflow-hidden">
+                   <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <Terminal className="w-64 h-64 text-white" />
+                   </div>
+                   {brief.agentActivities?.length === 0 && (
+                     <div className="text-zinc-500">Initializing orchestrator pipeline...</div>
+                   )}
+                   {brief.agentActivities?.map((act: any) => (
+                      <div key={act.id} className="relative z-10 flex gap-4 border-b border-white/[0.02] pb-4">
+                         <div className="w-32 shrink-0 text-fuchsia-400 font-bold">[{act.agentName}]</div>
+                         <div className="flex-1">
+                            <div className={act.status === 'running' ? 'text-zinc-300 animate-pulse' : 'text-zinc-400'}>{act.task}</div>
+                            {act.result && <div className="text-emerald-400 mt-1" style={{ whiteSpace: 'pre-wrap' }}>↳ {act.result}</div>}
+                         </div>
+                         <div className="shrink-0 text-right">
+                           {act.status === 'running' && <span className="px-2 py-0.5 bg-amber-500/20 text-amber-500 rounded text-[10px] uppercase">Running</span>}
+                           {act.status === 'completed' && <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-500 rounded text-[10px] uppercase">Done</span>}
+                         </div>
+                      </div>
+                   ))}
+                 </div>
+              </div>
+            
+            ) : activeTab === 'intelligence' && oppInt ? (
               <div className="p-10 max-w-5xl mx-auto space-y-10">
                 {/* Score Header */}
                 <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
@@ -170,8 +205,8 @@ export function BlueprintModal({ brief }: { brief: any }) {
                     <h3 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
                       <Hexagon className="w-8 h-8 text-indigo-400" /> Opportunity Intelligence Engine
                     </h3>
-                    <p className="text-zinc-400 mt-2 font-medium bg-white/5 p-3 rounded-xl border border-white/5 inline-block">
-                      <span className="text-white font-bold opacity-80">AI Assessment:</span> {oppInt.recommendation}
+                    <p className="text-zinc-400 mt-2 font-medium bg-white/5 p-3 rounded-xl border border-white/5 inline-block cursor-default">
+                      <span className="text-white font-bold opacity-80">Autonomous Insight:</span> {oppInt.recommendation}
                     </p>
                   </div>
                   <div className={`w-36 h-36 rounded-full border-4 flex flex-col items-center justify-center shrink-0 relative ${getColorClass(oppInt.scores.composite)}`}>
@@ -208,6 +243,23 @@ export function BlueprintModal({ brief }: { brief: any }) {
                     </div>
                   ))}
                 </div>
+
+                {/* Alerts Box */}
+                {brief.intelligenceAlerts && brief.intelligenceAlerts.length > 0 && (
+                  <div className="bg-red-500/5 border border-red-500/20 p-5 rounded-2xl mb-8">
+                     <h4 className="flex items-center gap-2 text-xs font-black uppercase text-red-500 tracking-widest mb-4">
+                       <ShieldAlert className="w-4 h-4" /> Priority Intelligence Alerts
+                     </h4>
+                     <div className="space-y-3">
+                        {brief.intelligenceAlerts.map((alert: any) => (
+                           <div key={alert.id} className="text-sm text-zinc-300 flex items-start gap-3">
+                              <span className="w-2 h-2 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                              {alert.message}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+                )}
 
                 {/* SWOT Analysis Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,22 +337,26 @@ export function BlueprintModal({ brief }: { brief: any }) {
                   </div>
                 </div>
 
-                <div className="bg-black/20 border border-white/5 p-6 rounded-3xl">
+                <div className="bg-black/20 border border-white/5 p-6 rounded-3xl flex items-center justify-between">
+                  <div>
+                    <h4 className="text-white font-bold mb-1">Manual Radar Override</h4>
+                    <p className="text-zinc-500 text-xs text-medium">Agent usually populates this automatically, but you can force-scan a specific threat.</p>
+                  </div>
                   <form onSubmit={handleAddCompetitor} className="flex gap-4">
                     <input 
                       type="text" 
-                      placeholder="Brand Name (e.g. Hormozi)" 
+                      placeholder="Brand Name" 
                       value={compName}
                       onChange={e => setCompName(e.target.value)}
-                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-5 text-white placeholder-zinc-500 outline-none focus:border-indigo-500/50"
+                      className="w-48 bg-white/5 border border-white/10 rounded-xl px-5 text-white placeholder-zinc-500 outline-none focus:border-indigo-500/50"
                       required
                     />
                     <input 
                       type="text" 
-                      placeholder="@handle (optional)" 
+                      placeholder="@handle" 
                       value={compHandle}
                       onChange={e => setCompHandle(e.target.value)}
-                      className="w-48 bg-white/5 border border-white/10 rounded-xl px-5 text-white placeholder-zinc-500 outline-none focus:border-indigo-500/50"
+                      className="w-36 bg-white/5 border border-white/10 rounded-xl px-5 text-white placeholder-zinc-500 outline-none focus:border-indigo-500/50"
                     />
                     <button 
                       type="submit" 
@@ -308,34 +364,29 @@ export function BlueprintModal({ brief }: { brief: any }) {
                       className="px-6 py-3 bg-white text-black font-black rounded-xl hover:bg-zinc-200 transition-colors flex items-center gap-2"
                     >
                       {isAddingCompetitor ? <Activity className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                      Deploy AI Spy
+                      Deploy Spy
                     </button>
                   </form>
                 </div>
 
                 {/* Viral Trend Tracker */}
-                {brief.competitors && brief.competitors.length > 0 && (
+                {brief.trendSignals && brief.trendSignals.length > 0 && (
                   <div className="bg-indigo-500/5 border border-indigo-500/10 rounded-3xl p-6">
                      <div className="flex items-center gap-3 mb-6">
                         <Activity className="w-5 h-5 text-indigo-400" />
                         <h4 className="text-sm font-black uppercase tracking-widest text-indigo-400">Live Trend Tracker</h4>
                      </div>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
-                           <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">Emerging Hook</div>
-                           <div className="text-sm font-bold text-white">"The 3 things they refuse to tell you about..."</div>
-                           <div className="text-xs text-emerald-400 mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +140% adoption</div>
-                        </div>
-                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
-                           <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">Dying Format</div>
-                           <div className="text-sm font-bold text-white">Generic Lip-sync POV Reels</div>
-                           <div className="text-xs text-red-400 mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3 rotate-180" /> -65% engagement</div>
-                        </div>
-                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
-                           <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">Blue Ocean Topic</div>
-                           <div className="text-sm font-bold text-white">Advanced Systemization</div>
-                           <div className="text-xs text-fuchsia-400 mt-2 flex items-center gap-1"><Zap className="w-3 h-3" /> 0.8% Saturation</div>
-                        </div>
+                        {brief.trendSignals.map((ts: any) => (
+                          <div key={ts.id} className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                             <div className="text-[10px] text-zinc-500 uppercase font-black mb-1">{ts.signalType.replace('_', ' ')}</div>
+                             <div className="text-sm font-bold text-white">{ts.topic}</div>
+                             <div className={`text-xs mt-2 flex items-center gap-1 ${ts.momentum > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                               <TrendingUp className={`w-3 h-3 ${ts.momentum < 0 ? 'rotate-180' : ''}`} /> 
+                               {ts.momentum > 0 ? '+' : ''}{(ts.momentum * 100).toFixed(0)}% momentum
+                             </div>
+                          </div>
+                        ))}
                      </div>
                   </div>
                 )}
@@ -344,7 +395,7 @@ export function BlueprintModal({ brief }: { brief: any }) {
                    <div className="py-20 text-center flex flex-col items-center">
                      <Database className="w-16 h-16 text-white/[0.05] mb-4" />
                      <h4 className="text-xl font-bold text-white">No active targets</h4>
-                     <p className="text-zinc-500 mt-2 max-w-sm">Deploy the AI spy by entering a competitor above. We'll aggressively scan their positioning and find gaps.</p>
+                     <p className="text-zinc-500 mt-2 max-w-sm">Agent has not found any direct competitors yet. Add one manually or wait for the next background scan.</p>
                    </div>
                 ) : (
                   <div className="space-y-6">
@@ -409,12 +460,47 @@ export function BlueprintModal({ brief }: { brief: any }) {
                 )}
               </div>
 
+            ) : activeTab === 'executionDeliverables' ? (
+              
+              <div className="p-10 max-w-5xl mx-auto space-y-10">
+                 <div>
+                    <h3 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                      <Target className="w-8 h-8 text-fuchsia-400" /> Execution Engine
+                    </h3>
+                    <p className="text-zinc-400 mt-2 font-medium">Actionable content and funnel recommendations automatically extracted by the orchestrator.</p>
+                 </div>
+                 
+                 <div className="space-y-6">
+                    {brief.executionPlans && brief.executionPlans.length > 0 ? brief.executionPlans.map((ep: any) => (
+                      <div key={ep.id} className="bg-black/20 border border-white/5 rounded-2xl p-6 flex items-start gap-4 shadow-inner relative overflow-hidden group">
+                         <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center shrink-0 border border-white/10">
+                            {ep.type === 'content_plan' ? <LayoutTemplate className="w-5 h-5 text-indigo-400" /> : <Zap className="w-5 h-5 text-emerald-400" />}
+                         </div>
+                         <div>
+                            <div className="flex gap-2 items-center mb-1">
+                               <span className="text-[10px] uppercase font-black tracking-widest text-zinc-500">{ep.type.replace('_', ' ')}</span>
+                               {ep.status === 'queued' && <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[9px] uppercase font-bold rounded border border-amber-500/20">Queued</span>}
+                               {ep.status === 'applied' && <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[9px] uppercase font-bold rounded border border-emerald-500/20">Applied</span>}
+                            </div>
+                            <h4 className="text-lg font-bold text-white tracking-wide">{ep.title}</h4>
+                            <p className="text-zinc-400 text-sm mt-2 leading-relaxed">{ep.content}</p>
+                         </div>
+                      </div>
+                    )) : (
+                      <div className="py-24 flex flex-col items-center">
+                         <Cog className="w-16 h-16 text-white/5 mb-4 animate-spin-slow" />
+                         <p className="text-zinc-500 font-medium">Orchestrator has not materialized execution deliverables yet.</p>
+                      </div>
+                    )}
+                 </div>
+              </div>
+
             ) : (
               // Standard Sections
               <div className="p-10 lg:p-14 max-w-3xl mx-auto">
                 <h3 className="text-3xl font-black text-white mb-8 border-b border-white/10 pb-4">{activeSection?.label}</h3>
                 <div className="prose prose-invert prose-indigo max-w-none">
-                  {blueprint.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').map((para: string, idx: number) => {
+                  {blueprint?.sections.find((s: any) => s.id === activeTab)?.content?.split('\n').map((para: string, idx: number) => {
                      if (para.trim().length === 0) return null;
                      const colonMatch = para.match(/^([^:]+:)(.*)$/);
                      if (colonMatch) {
@@ -433,6 +519,6 @@ export function BlueprintModal({ brief }: { brief: any }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>, document.body
   );
 }

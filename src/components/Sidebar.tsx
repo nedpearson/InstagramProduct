@@ -6,27 +6,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FileText, Package, Library, Calendar, Eye,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
-  Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem
+  Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem,
+  CircleDollarSign, Target
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const navigation = [
-  { name: 'Overview', href: '/overview', icon: LayoutDashboard },
-  { name: 'Product Briefs', href: '/briefs', icon: FileText },
-  { name: 'Products', href: '/products', icon: Package },
-  { name: 'Content Library', href: '/library', icon: Library },
-  { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Post Preview', href: '/preview', icon: Eye },
+  { name: 'Executive Command Center', href: '/overview', icon: LayoutDashboard },
+  { name: 'Market Domination', href: '/domination', icon: Target },
+  { name: 'Trend Radar', href: '/trends', icon: Activity },
+  { name: 'Competitor War Room', href: '/competitors', icon: ShieldCheck },
+  { name: 'Launch Cockpit', href: '/launches', icon: Zap },
+  { name: 'Revenue Dashboard', href: '/revenue', icon: CircleDollarSign },
 ];
 
 const operations = [
+  { name: 'Automation Dashboard', href: '/automation', icon: LineChart },
+  { name: 'Content Library', href: '/library', icon: Library },
   { name: 'Review Queue', href: '/queue', icon: AlertCircle },
-  { name: 'Operator Inbox', href: '/inbox', icon: Inbox },
-  { name: 'System Health', href: '/health', icon: Activity },
-  { name: 'Rules Engine', href: '/rules', icon: ShieldCheck },
-  { name: 'Analytics', href: '/analytics', icon: LineChart },
-  { name: 'Billing', href: '/billing', icon: Gem },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Settings / Admin', href: '/settings', icon: Settings },
 ];
 
 export function Sidebar({ children }: { children: React.ReactNode }) {

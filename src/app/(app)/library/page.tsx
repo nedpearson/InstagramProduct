@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Search, Filter, MoreHorizontal, FileText, Image as ImageIcon, MessageSquare, Video, Library } from 'lucide-react';
+import CreateAssetButton from '@/components/CreateAssetButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +24,7 @@ export default async function LibraryPage() {
           <p className="text-sm font-medium text-zinc-500 mt-2">Manage and review all generated post variants and media.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 active:scale-95">
-            Create Asset
-          </button>
+          <CreateAssetButton />
         </div>
       </div>
 
@@ -90,9 +89,9 @@ export default async function LibraryPage() {
                     </span>
                   </td>
                   <td className="px-8 py-5 text-right">
-                    <button className="p-2.5 hover:bg-white/10 rounded-xl text-zinc-500 hover:text-white transition-colors outline-none border border-transparent hover:border-white/10">
+                    <Link href={`/library/${asset.id}`} className="inline-block p-2.5 hover:bg-white/10 rounded-xl text-zinc-500 hover:text-white transition-colors outline-none border border-transparent hover:border-white/10">
                       <MoreHorizontal className="w-5 h-5" />
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { startAutonomousOrchestration } from '@/lib/orchestrator';
 
 export async function saveManualTokenAction(formData: FormData) {
   const token = formData.get('token') as string;
@@ -135,18 +136,20 @@ export async function processReviewTaskAction(taskId: string, action: 'approve' 
 }
 
 export async function createBriefAction(productId: string) {
-  // Placeholder for real form input, creates a dummy brief
   const product = await prisma.product.findUnique({ where: { id: productId }});
   if (!product) return;
   
-  await prisma.productBrief.create({
+  const brief = await prisma.productBrief.create({
     data: {
        productId: product.id,
        targetAudience: 'New Audience Segment',
-       status: 'draft',
+       status: 'processing',
        approvalMode: 'semi-auto',
     }
   });
+  
+  // Asynchronous fire & forget background orchestration
+  Promise.resolve().then(() => startAutonomousOrchestration(brief.id).catch(console.error));
   
   revalidatePath('/briefs');
 }
@@ -167,7 +170,7 @@ export async function scheduleContentAction(formData: FormData) {
     data: {
       variantId,
       scheduledFor: new Date(scheduledFor),
-      status: 'pending',
+      status: 'pending'
     }
   });
 
@@ -181,7 +184,7 @@ export async function scheduleContentAction(formData: FormData) {
   revalidatePath('/library');
 }
 
-export async function generateStrategicBlueprintAction(briefId: string) {
+export async function generateStrategicBlueprintAction(briefId: string, skipRevalidate = false) {
   const brief = await prisma.productBrief.findUnique({
     where: { id: briefId },
     include: { product: true }
@@ -317,10 +320,10 @@ export async function generateStrategicBlueprintAction(briefId: string) {
     }
   });
 
-  revalidatePath('/briefs');
+  if (!skipRevalidate) revalidatePath('/briefs');
 }
 
-export async function analyzeCompetitorAction(briefId: string, inputData: { name: string, url_handle?: string }) {
+export async function analyzeCompetitorAction(briefId: string, inputData: { name: string, url_handle?: string }, skipRevalidate = false) {
   // Simulate AI intensive scraping & analysis
   const threatScore = Math.floor(Math.random() * 40) + 60; // 60-99
   const followers = Math.floor(Math.random() * 850000) + 15000;
@@ -350,7 +353,7 @@ export async function analyzeCompetitorAction(briefId: string, inputData: { name
     data: {
       briefId,
       brandName: inputData.name,
-      handle: inputData.url_handle?.startsWith('@') ? inputData.url_handle : `@${inputData.url_handle || inputData.name.toLowerCase().replace(/\\s/g, '')}`,
+      handle: inputData.url_handle?.startsWith('@') ? inputData.url_handle : `@${inputData.url_handle || inputData.name.toLowerCase().replace(/\s/g, '')}`,
       threatScore,
       followers,
       positioning: intelligenceData.positioning,
@@ -358,5 +361,20 @@ export async function analyzeCompetitorAction(briefId: string, inputData: { name
     }
   });
 
-  revalidatePath('/briefs');
+  if (!skipRevalidate) revalidatePath('/briefs');
 }
+
+export async function deployBestOpportunityAction(workspaceId: string, mode: 'preview' | 'confirm' | 'autonomous') {
+  const { deploymentEngine } = await import('@/lib/engines/DeploymentEngine');
+  
+  try {
+    const deploymentPlan = await deploymentEngine.deployNextBestThing(workspaceId, { mode });
+    revalidatePath('/launches');
+    revalidatePath('/overview');
+    return deploymentPlan;
+  } catch (error: any) {
+    console.error('Deployment Engine Error:', error);
+    throw new Error(error.message || 'Failed to autonomously deploy opportunity.');
+  }
+}
+

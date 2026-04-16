@@ -12,9 +12,12 @@ model User {
   email          String           @unique
   name           String?
   hashedPassword String?
+  systemRole     String           @default("user") // user, admin, superadmin
+  isActive       Boolean          @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  workspaces     Workspace[]
+  ownedWorkspaces Workspace[]     @relation("WorkspaceOwner")
+  memberships    WorkspaceMember[]
   auditLogs      AuditLog[]
   overrides      OverrideLedger[]
 }
@@ -22,10 +25,11 @@ model User {
 model Workspace {
   id                String             @id @default(uuid())
   name              String
-  userId            String
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ownerId           String
+  owner             User               @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+  members           WorkspaceMember[]
   instagramAccounts InstagramAccount[]
   products          Product[]
   campaigns         Campaign[]
@@ -35,6 +39,25 @@ model Workspace {
   rules             AutomationRule[]
   experiments       Experiment[]
   snapshots         Snapshot[]
+  launches          Launch[]
+  funnels           MonetizationFunnel[]
+  simulations       Simulation[]
+  forecasts         Forecast[]
+  analyticsEvents   AnalyticsEvent[]
+  learningMemories  LearningMemory[]
+}
+
+model WorkspaceMember {
+  id          String   @id @default(uuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        String   @default("member") // admin, member, viewer, agent
+  permissions String?  // JSON string for fine-grained permissions
+  joinedAt    DateTime @default(now())
+
+  @@unique([workspaceId, userId])
 }
 
 model InstagramAccount {
@@ -82,6 +105,7 @@ model Product {
   updatedAt   DateTime       @updatedAt
   briefs      ProductBrief[]
   campaigns   Campaign[]
+  launches    Launch[]
 }
 
 model ProductBrief {
@@ -109,7 +133,18 @@ model ProductBrief {
   visualStyleNotes      String?
   blueprintData         String?    // Detailed $10k AI Strategy Blueprint (JSON stringified)
   competitors           Competitor[] // Live Competitor Intelligence tracking
-  status                String   @default("draft") // draft, active, archived
+  agentActivities       AgentActivity[] // Logs of agents working on this brief
+  intelligenceAlerts    IntelligenceAlert[] // Alerts surfaced for this brief
+  executionPlans        ExecutionPlan[]
+  trendSignals          TrendSignal[]
+  historicalSnapshots   HistoricalSnapshot[]
+  conceptVersions       ConceptBriefVersion[]
+  strategyReport        StrategyReport?
+  opportunityScore      OpportunityScore?
+  qaReviews             QAReview[]
+  workflowRuns          WorkflowRun[]
+  evidenceReferences    EvidenceReference[]
+  status                String   @default("draft") // draft, processing, active, archived
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
@@ -125,10 +160,38 @@ model Competitor {
   followers        Int      @default(0)
   positioning      String?
   intelligenceData String?  // JSON with SWOT, Gaps, Exploitation, Offers, Tracking
+  snapshots        CompetitorSnapshot[]
   isTrackingLive   Boolean  @default(true)
   lastScannedAt    DateTime @default(now())
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model AgentActivity {
+  id          String   @id @default(uuid())
+  runId       String?  @unique
+  briefId     String
+  brief       ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  agentName   String   // e.g., "Market Research Agent", "Opp Harvest Agent"
+  task        String?  // e.g., "Scanning competitor websites", "Generating 90-Day Roadmap"
+  status      String   @default("running") // running, completed, failed
+  result      String?  
+  confidence  Float?
+  durationMs  Int?
+  payloadSnapshot String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model IntelligenceAlert {
+  id          String   @id @default(uuid())
+  briefId     String
+  brief       ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  level       String   // critical, high, moderate, info
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Campaign {
@@ -240,6 +303,8 @@ model Comment {
   createdAt   DateTime      @default(now())
 
   @@unique([postId, username, text]) // Idempotency
+  @@index([postId])
+  @@index([isLead])
 }
 
 model Lead {
@@ -336,9 +401,10 @@ model DeadLetterJob {
   stackTrace      String?
   suggestedAction String?
   replayEligible  Boolean       @default(true)
-  firstFailedAt   DateTime
   lastFailedAt    DateTime      @default(now())
   operatorNotes   String?
+
+  @@index([replayEligible])
 }
 
 model WatchdogHeartbeat {
@@ -513,3 +579,259 @@ model Discount {
   active         Boolean      @default(true)
 }
 
+model StrategicJobQueue {
+  id          String   @id @default(uuid())
+  jobType     String   // "INTAKE_AGENT", "MARKET_RESEARCH", "SCORE_COMPUTATION", etc.
+  briefId     String
+  payload     String?  // JSON data
+  status      String   @default("pending") // pending, active, completed, failed
+  lockedAt    DateTime? 
+  priority    Int      @default(0)
+  retries     Int      @default(0)
+  errorMessage String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TrendSignal {
+  id          String   @id @default(uuid())
+  briefId     String
+  brief       ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  niche       String
+  topic       String
+  momentum    Float    // e.g. +1.45 (145% growth)
+  signalType  String   // "emerging", "dying", "blue_ocean"
+  details     String?  // JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ExecutionPlan {
+  id          String   @id @default(uuid())
+  briefId     String
+  brief       ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  type        String   // "content_plan", "funnel_tweak", "messaging_shift"
+  status      String   @default("queued") // queued, applied, dismissed
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HistoricalSnapshot {
+  id          String   @id @default(uuid())
+  briefId     String
+  brief       ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  hashKey     String   
+  dataType    String   
+  dataContent String
+  createdAt   DateTime @default(now())
+}
+
+model ConceptBriefVersion {
+  id              String   @id @default(uuid())
+  briefId         String
+  brief           ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  versionNumber   Int
+  rawPayload      String   
+  diffSummary     String?  
+  createdAt       DateTime @default(now())
+}
+
+model CompetitorSnapshot {
+  id              String   @id @default(uuid())
+  competitorId    String
+  competitor      Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  snapshotDate    DateTime @default(now())
+  metrics         CompetitorMetric[]
+  positioning     CompetitorPositioning[]
+}
+
+model CompetitorMetric {
+  id              String   @id @default(uuid())
+  snapshotId      String
+  snapshot        CompetitorSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  metricKey       String
+  metricValue     String
+}
+
+model CompetitorPositioning {
+  id              String   @id @default(uuid())
+  snapshotId      String
+  snapshot        CompetitorSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  positioningType String
+  description     String
+}
+
+model StrategyReport {
+  id              String   @id @default(uuid())
+  briefId         String   @unique
+  brief           ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  overallScore    Float    @default(0)
+  status          String   @default("draft") // draft, qa_pending, active, superseded
+  compiledAt      DateTime?
+  sections        StrategySection[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model StrategySection {
+  id              String   @id @default(uuid())
+  reportId        String
+  report          StrategyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  sectionType     String   // "market_overview", "blue_ocean", "conversion"
+  content         String   
+  confidenceScore Float
+  lastUpdated     DateTime @default(now())
+}
+
+model OpportunityScore {
+  id              String   @id @default(uuid())
+  briefId         String   @unique
+  brief           ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  totalScore      Float
+  components      ScoreComponentEntity[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ScoreComponentEntity {
+  id              String   @id @default(uuid())
+  scoreId         String
+  score           OpportunityScore @relation(fields: [scoreId], references: [id], onDelete: Cascade)
+  componentName   String   // "Demand", "Competition"
+  value           Float
+  reasoning       String   
+}
+
+model QAReview {
+  id              String   @id @default(uuid())
+  briefId         String
+  brief           ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  passed          Boolean
+  depthScore      Float
+  consistencyScore Float
+  issues          QAIssue[]
+  reviewedAt      DateTime @default(now())
+}
+
+model QAIssue {
+  id              String   @id @default(uuid())
+  reviewId        String
+  review          QAReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  severity        String
+  issueType       String
+  description     String
+}
+
+model WorkflowRun {
+  id              String   @id @default(uuid())
+  briefId         String
+  brief           ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  triggerEvent    String
+  status          String   // queued, active, completed, failed
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  errors          WorkflowError[]
+}
+
+model WorkflowError {
+  id              String   @id @default(uuid())
+  workflowRunId   String
+  workflowRun     WorkflowRun @relation(fields: [workflowRunId], references: [id], onDelete: Cascade)
+  errorCode       String
+  errorMessage    String
+  stackTrace      String?
+  failedAt        DateTime @default(now())
+}
+
+model EvidenceReference {
+  id              String   @id @default(uuid())
+  briefId         String
+  brief           ProductBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  sourceType      String   // URL, SERP
+  sourceValue     String
+}
+
+model Launch {
+  id              String   @id @default(uuid())
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  productId       String?
+  product         Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name            String
+  targetDate      DateTime
+  status          String    @default("planning") // planning, active, completed, postponed
+  revenueGoal     Float?
+  simulationId    String?   @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model MonetizationFunnel {
+  id              String   @id @default(uuid())
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name            String
+  description     String?
+  isLive          Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  steps           FunnelStep[]
+}
+
+model FunnelStep {
+  id              String   @id @default(uuid())
+  funnelId        String
+  funnel          MonetizationFunnel @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+  name            String
+  stepOrder       Int
+  conversionRate  Float?
+  visitors        Int      @default(0)
+  conversions     Int      @default(0)
+}
+
+model Simulation {
+  id              String   @id @default(uuid())
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  targetEvent     String   // "launch_revenue", "campaign_reach"
+  parameters      String   // JSON
+  results         String?  // JSON
+  confidence      Float?
+  status          String   @default("queued") // queued, running, completed
+  createdAt       DateTime @default(now())
+}
+
+model Forecast {
+  id              String   @id @default(uuid())
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  metricName      String   // "mrr_growth", "audience_growth"
+  horizonDays     Int      @default(30)
+  predictedValue  Float
+  lowerBound      Float
+  upperBound      Float
+  computedAt      DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id              String   @id @default(uuid())
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  eventType       String   // pageview, cta_click, purchase
+  properties      String   // JSON
+  timestamp       DateTime @default(now())
+}
+
+model LearningMemory {
+  id              String   @id @default(uuid())
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  context         String   // E.g., "what works for reels hooks"
+  insight         String
+  confidence      Float    @default(0.5)
+  sourceData      String?  // JSON
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

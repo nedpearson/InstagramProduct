@@ -9,7 +9,14 @@ export const dynamic = 'force-dynamic';
 
 export default async function BriefsPage({ searchParams }: { searchParams: Promise<{ edit?: string, compare?: string }> }) {
   const briefs = await prisma.productBrief.findMany({
-    include: { product: true, competitors: { orderBy: { threatScore: 'desc' }} },
+    include: { 
+      product: true, 
+      competitors: { orderBy: { threatScore: 'desc' }},
+      agentActivities: { orderBy: { createdAt: 'desc' }, take: 15 },
+      intelligenceAlerts: { orderBy: { createdAt: 'desc' } },
+      executionPlans: true,
+      historicalSnapshots: { orderBy: { createdAt: 'desc' } }
+    },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -93,9 +100,16 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
             </div>
             
             <div className="flex gap-4 relative z-10 pt-6 border-t border-white/5 mt-auto">
-              <Link href={`?edit=${brief.id}`} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[13px] font-bold rounded-xl transition-colors border border-white/10 text-zinc-300 shadow-inner text-center block focus:outline-none flex items-center justify-center">
-                {hasBlueprint ? 'View 10k Blueprint' : 'Generate Blueprint'}
-              </Link>
+              {brief.status === 'processing' ? (
+                <div className="flex-1 py-3 bg-fuchsia-500/10 text-fuchsia-400 text-[13px] font-bold rounded-xl border border-fuchsia-500/20 text-center flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 rounded-full border-2 border-fuchsia-500 border-t-transparent animate-spin"></div>
+                  Agents running...
+                </div>
+              ) : (
+                <Link href={`?edit=${brief.id}`} scroll={false} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[13px] font-bold rounded-xl transition-colors border border-white/10 text-zinc-300 shadow-inner text-center block focus:outline-none flex items-center justify-center">
+                  {hasBlueprint ? 'View 10k Blueprint' : 'View Blueprint'}
+                </Link>
+              )}
             </div>
           </div>
         )})}
