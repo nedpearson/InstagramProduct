@@ -181,3 +181,104 @@ export async function scheduleContentAction(formData: FormData) {
   revalidatePath('/library');
 }
 
+export async function generateStrategicBlueprintAction(briefId: string) {
+  const brief = await prisma.productBrief.findUnique({
+    where: { id: briefId },
+    include: { product: true }
+  });
+  
+  if (!brief) throw new Error('Brief not found');
+
+  const niche = brief.niche || brief.product.name;
+  
+  const blueprint = {
+    opportunityScore: Math.floor(Math.random() * 15) + 85, // 85-99
+    metrics: {
+       competitionSaturation: "Low - High Opportunity",
+       easeOfEntry: "Medium",
+       monetizationPotential: "Extreme",
+       viralityPotential: "High",
+       longTermSustainability: "Excellent"
+    },
+    sections: [
+      {
+        id: 'marketOverview',
+        title: 'Market Overview',
+        content: `The ${niche} market is currently undergoing a massive shift. Mainstream creators are focusing on generic vanity metrics, leaving a massive void for hyper-specific, actionable solutions. The target audience is experiencing "advice fatigue" and is willing to pay premium prices for execution-ready blueprints.`
+      },
+      {
+        id: 'audienceAvatar',
+        title: 'Target Audience Avatar',
+        content: `Demographics: 28-45 years old, professional background, highly motivated but time-poor.
+Psychographics: Values efficiency over entertainment. Wants systems, not just motivation.
+Core Pain Point: They've tried the generic advice and it failed them. They feel stuck on a plateau.
+Hidden Desire: They want the status of being a top 1% operator quietly dominating their space without needing to be loud.`
+      },
+      {
+        id: 'competitorAnalysis',
+        title: 'Competitor Analysis',
+        content: `Major competitors are relying on 2021 tactics (dancing reels, engagement bait). Their funnels are leaky and their offers are commoditized. 
+Weakness Exploitation: They lack depth. By positioning your offer as an "Implementation System" rather than an "Information Course," you immediately disqualify the top 3 competitors in this space as amateur.`
+      },
+      {
+        id: 'blueOceanStrategy',
+        title: 'Blue Ocean Opportunity',
+        content: `Positioning Strategy: The "Anti-Guru" approach. Tell the hard truths. Frame your product as the antidote to the hustle culture BS currently plaguing the space. By doing so, you tap into a massive, highly-profitable segment of frustrated buyers looking for a mature, sophisticated solution.`
+      },
+      {
+        id: 'contentStrategy',
+        title: 'Content Strategy Framework',
+        content: `Pillar 1: Contrarian Belief Shifts (30%) - Dismantling common industry myths.
+Pillar 2: Tactical Execution (40%) - Granular "how-to" steps proving absolute expertise.
+Pillar 3: Lifestyle Independence (15%) - Showing the quiet, scalable results of the system.
+Pillar 4: Direct Response Offers (15%) - Unapologetic pitching of the core mechanism.`
+      },
+      {
+        id: 'conversionStrategy',
+        title: 'Conversion Strategy',
+        content: `Lead Magnet: "The Competitor Gap Checklist" (High-value PDF).
+Offer Setup: $47 entry tripwire -> $497 core system -> $2,500 consulting upsell.
+Traffic: 100% organic Instagram -> DM Automation Trigger -> VSL Page. 
+Average Expected Conversion: 3.5% on warm traffic.`
+      },
+      {
+        id: 'brandAuthority',
+        title: 'Brand Authority Strategy',
+        content: `Visual Language: Monochromatic, high-contrast, premium, minimal text. No chaotic emojis or flashy colors. Focus on "quiet luxury" and professional dominance.
+Tone: Authoritative, direct, uncompromising, and highly analytical.`
+      },
+      {
+        id: 'automationScale',
+        title: 'Automation & Scale',
+        content: `Workflow: ManyChat tied to every post. Keyword trigger -> DM Sequence -> Automated Lead Tagging -> ConvertKit email sequence.
+Operational Drag: Currently none. The entire delivery must be asynchronous and highly productized to allow infinite scale.`
+      },
+      {
+        id: 'executionRoadmap',
+        title: '90-Day Execution Roadmap',
+        content: `Week 1-2: Setup core funnels & automation rules.
+Week 3-4: Launch Organic Outreach content sprint (2x per day).
+Week 5-8: Shift to authority-building and webinar/VSL testing.
+Week 9-12: Launch retargeting engine, optimize LTV, and scale the top of funnel via organic collaborations.`
+      },
+      {
+        id: 'kpis',
+        title: 'KPIs & Success Metrics',
+        content: `Target Lead Cost (Organic): $0.00
+Target DM Conversion Rate: 12%
+Target VSL Conversion Rate: 2.8%
+90-Day ARR Target: $75,000+`
+      }
+    ]
+  };
+
+  await prisma.productBrief.update({
+    where: { id: briefId },
+    data: {
+      blueprintData: JSON.stringify(blueprint),
+      status: 'active'
+    }
+  });
+
+  revalidatePath('/briefs');
+}

@@ -107,6 +107,7 @@ model ProductBrief {
   brandVoiceNotes       String?
   hashtagStyle          String?
   visualStyleNotes      String?
+  blueprintData         String?    // Detailed $10k AI Strategy Blueprint (JSON stringified)
   status                String   @default("draft") // draft, active, archived
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

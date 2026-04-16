@@ -1,7 +1,8 @@
 import { generateBriefAction, createBriefAction } from '@/app/(app)/actions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers } from 'lucide-react';
+import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers, TrendingUp } from 'lucide-react';
+import { BlueprintModal } from '@/components/BlueprintModal';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,14 +36,17 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-        {briefs.map((brief) => (
+        {briefs.map((brief) => {
+          const hasBlueprint = !!brief.blueprintData;
+          const oppScore = hasBlueprint ? JSON.parse(brief.blueprintData!).opportunityScore : '--';
+          return (
           <div key={brief.id} className="group glass-panel-ai border border-white/[0.05] p-6 rounded-2xl shadow-sm hover:border-indigo-500/20 transition-all duration-300 flex flex-col justify-between relative overflow-hidden hover:-translate-y-px ai-scan-panel">
 
             <div>
               <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex items-start gap-4">
-                   <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-indigo-400 shadow-inner shrink-0 group-hover:scale-105 transition-transform duration-300">
-                     <FileText className="w-7 h-7" />
+                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center border shadow-inner shrink-0 group-hover:scale-105 transition-transform duration-300 ${hasBlueprint ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-white/5 border-white/10 text-white/50'}`}>
+                     <TrendingUp className="w-6 h-6" />
                    </div>
                    <div>
                      <h3 className="font-bold text-xl text-white leading-tight group-hover:text-indigo-400 transition-colors drop-shadow-sm">{brief.product.name}</h3>
@@ -59,36 +63,33 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
               </div>
               
               <div className="space-y-4 mb-8 relative z-10">
-                <div className="flex items-start gap-4 text-sm">
-                   <div className="w-8 h-8 rounded-xl bg-black/40 border border-white/5 flex items-center justify-center shrink-0 shadow-inner">
+                <div className="flex items-center justify-between text-sm bg-black/40 p-3 rounded-xl border border-white/5">
+                   <div className="flex items-center gap-3">
                      <Target className="w-4 h-4 text-zinc-400" />
+                     <span className="text-zinc-300 font-medium">Opp Score</span>
                    </div>
-                   <span className="text-zinc-300 font-medium line-clamp-2 leading-relaxed pt-1.5">{brief.targetAudience}</span>
+                   <div className={`font-black text-lg ${hasBlueprint ? 'text-indigo-400' : 'text-zinc-500'}`}>
+                     {oppScore}
+                   </div>
                 </div>
-                <div className="flex items-start gap-4 text-sm">
+                <div className="flex items-start gap-4 text-sm mt-4">
                    <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 shadow-inner">
                      <MessageSquare className="w-4 h-4 text-indigo-400" />
                    </div>
                    <div className="flex flex-wrap gap-2 pt-1.5">
-                      <span className="bg-black/50 text-indigo-400 text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-md border border-white/5 shadow-inner">{brief.ctaKeyword}</span>
+                      <span className="bg-black/50 text-indigo-400 text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-md border border-white/5 shadow-inner">{brief.ctaKeyword || 'CTA'}</span>
                    </div>
                 </div>
               </div>
             </div>
             
             <div className="flex gap-4 relative z-10 pt-6 border-t border-white/5 mt-auto">
-              <Link href={`?edit=${brief.id}`} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-sm font-bold rounded-xl transition-colors border border-white/10 text-zinc-300 shadow-inner text-center block">
-                Edit Strategy
+              <Link href={`?edit=${brief.id}`} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-[13px] font-bold rounded-xl transition-colors border border-white/10 text-zinc-300 shadow-inner text-center block focus:outline-none flex items-center justify-center">
+                {hasBlueprint ? 'View 10k Blueprint' : 'Generate Blueprint'}
               </Link>
-              <form action={generateBriefAction.bind(null, brief.id)} className="flex-1">
-                <button type="submit" className="w-full h-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95">
-                  <Sparkles className="w-4 h-4" />
-                  Generate AI Content
-                </button>
-              </form>
             </div>
           </div>
-        ))}
+        )})}
       </div>
       
       {briefs.length === 0 && (
@@ -105,29 +106,8 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
          </div>
       )}
 
-      {/* Edit Modal Layer */}
-      {editingBrief && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
-          <div className="relative w-full max-w-lg bg-zinc-950 border border-white/[0.08] shadow-2xl rounded-2xl overflow-hidden p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Edit Product Brief</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-bold text-zinc-400">Target Audience</label>
-                <textarea className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white resize-none" rows={3} defaultValue={editingBrief.targetAudience || ''} />
-              </div>
-              <div>
-                <label className="text-sm font-bold text-zinc-400">CTA Keyword</label>
-                <input type="text" className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white" defaultValue={editingBrief.ctaKeyword || ''} />
-              </div>
-            </div>
-            <div className="flex items-center justify-end gap-3 mt-6">
-              <Link href="/briefs" scroll={false} className="px-5 py-2.5 rounded-lg text-sm font-bold text-zinc-400 hover:text-white transition-colors">Cancel</Link>
-              <Link href="/briefs" scroll={false} className="px-5 py-2.5 rounded-lg text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors">Save Changes</Link>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Blueprint Modal Overlay */}
+      {editingBrief && <BlueprintModal brief={editingBrief} />}
     </div>
   );
 }
