@@ -3,17 +3,19 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers, TrendingUp } from 'lucide-react';
 import { BlueprintModal } from '@/components/BlueprintModal';
+import { CompareModal } from '@/components/CompareModal';
 
 export const dynamic = 'force-dynamic';
 
-export default async function BriefsPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
+export default async function BriefsPage({ searchParams }: { searchParams: Promise<{ edit?: string, compare?: string }> }) {
   const briefs = await prisma.productBrief.findMany({
     include: { product: true },
     orderBy: { createdAt: 'desc' },
   });
 
-  const { edit } = await searchParams;
+  const { edit, compare } = await searchParams;
   const editingBrief = edit ? briefs.find(b => b.id === edit) : null;
+  const isComparing = compare === 'true';
 
   return (
     <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
@@ -28,6 +30,9 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
           <p className="text-sm font-medium text-zinc-500 mt-2">Configure foundational strategy and targets for AI generation.</p>
         </div>
         <div className="flex items-center gap-3">
+          <Link href="?compare=true" scroll={false} className="px-5 py-2.5 bg-black hover:bg-white/5 border border-white/10 text-zinc-300 font-bold text-[13px] rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 active:scale-95">
+            <Layers className="w-3.5 h-3.5 flex-shrink-0" /> Compare Strategies
+          </Link>
           <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 flex items-center gap-2 active:scale-95">
             <Plus className="w-3.5 h-3.5 flex-shrink-0" /> New Brief
           </button>
@@ -38,7 +43,11 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
         {briefs.map((brief) => {
           const hasBlueprint = !!brief.blueprintData;
-          const oppScore = hasBlueprint ? JSON.parse(brief.blueprintData!).opportunityScore : '--';
+          const bgData = hasBlueprint ? JSON.parse(brief.blueprintData!) : null;
+          const oppScore = hasBlueprint && bgData.opportunityScore 
+            ? bgData.opportunityScore 
+            : (hasBlueprint && bgData.opportunityIntelligence?.scores?.composite ? bgData.opportunityIntelligence.scores.composite : '--');
+          
           return (
           <div key={brief.id} className="group glass-panel-ai border border-white/[0.05] p-6 rounded-2xl shadow-sm hover:border-indigo-500/20 transition-all duration-300 flex flex-col justify-between relative overflow-hidden hover:-translate-y-px ai-scan-panel">
 
@@ -108,6 +117,9 @@ export default async function BriefsPage({ searchParams }: { searchParams: Promi
 
       {/* Blueprint Modal Overlay */}
       {editingBrief && <BlueprintModal brief={editingBrief} />}
+
+      {/* Compare Modal Overlay */}
+      {isComparing && <CompareModal briefs={briefs} />}
     </div>
   );
 }
