@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { startAutonomousOrchestration } from '@/lib/orchestrator';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     // Check if there's any active brief, if so, trigger its orchestration

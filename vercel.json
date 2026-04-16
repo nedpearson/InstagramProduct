@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "crons": [
+    {
+      "path": "/api/integrations/post",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

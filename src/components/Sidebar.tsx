@@ -7,7 +7,7 @@ import {
   LayoutDashboard, FileText, Package, Library, Calendar, Eye,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
   Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem,
-  CircleDollarSign, Target, TrendingUp
+  CircleDollarSign, Target, TrendingUp, BookOpen
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -28,6 +28,7 @@ const operations = [
   { name: 'Product Briefs', href: '/briefs', icon: FileText },
   { name: 'Review Queue', href: '/queue', icon: AlertCircle },
   { name: 'Settings / Admin', href: '/settings', icon: Settings },
+  { name: 'System Docs & Setup', href: '/docs', icon: BookOpen },
 ];
 
 export function Sidebar({ children }: { children: React.ReactNode }) {

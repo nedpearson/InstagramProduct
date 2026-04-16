@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   // Placeholder for incoming Instagram Webhook events
   // - Mentions
@@ -9,7 +11,10 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true, status: "webhook_ack" });
 }
 
+import { headers } from 'next/headers';
+
 export async function GET(req: Request) {
+  headers();
   // Webhook verification for Meta Graph API
   const { searchParams } = new URL(req.url);
   const challenge = searchParams.get('hub.challenge');
