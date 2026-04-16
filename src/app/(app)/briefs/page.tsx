@@ -5,13 +5,14 @@ import { FileText, Plus, Target, Sparkles, MessageSquare, Briefcase, Layers } fr
 
 export const dynamic = 'force-dynamic';
 
-export default async function BriefsPage({ searchParams }: { searchParams: { edit?: string } }) {
+export default async function BriefsPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
   const briefs = await prisma.productBrief.findMany({
     include: { product: true },
     orderBy: { createdAt: 'desc' },
   });
 
-  const editingBrief = searchParams.edit ? briefs.find(b => b.id === searchParams.edit) : null;
+  const { edit } = await searchParams;
+  const editingBrief = edit ? briefs.find(b => b.id === edit) : null;
 
   return (
     <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 ease-out">
