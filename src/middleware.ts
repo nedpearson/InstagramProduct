@@ -4,13 +4,14 @@ import type { NextRequest } from 'next/server';
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
+  const publicRoutes = ['/', '/pricing', '/signup', '/login', '/favicon.ico'];
+
   // PASS-THROUGH FOR WEBHOOKS AND APIS
-  // Master Orchestrator, Stripe Webhooks, Meta Webhooks, and static files must NEVER be delayed by auth
+  // Master Orchestrator, Stripe Webhooks, Meta Webhooks, Front-end marketing must NEVER be delayed by auth
   if (
     url.pathname.startsWith('/api') || 
     url.pathname.startsWith('/_next') || 
-    url.pathname === '/favicon.ico' ||
-    url.pathname === '/login'
+    publicRoutes.includes(url.pathname)
   ) {
     return NextResponse.next();
   }
