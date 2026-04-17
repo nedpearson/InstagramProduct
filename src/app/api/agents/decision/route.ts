@@ -171,6 +171,16 @@ export async function POST(request: Request) {
   } catch (e: any) {
     errors.push(`Revenue Scaling: ${e.message}`);
   }
+  // ─── STEP 7.8: Velocity Compression Engine ─────────────────────────────────
+  try {
+    const velocityRes = await fetch(`${baseUrl}/api/agents/velocity`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    results.velocityEngine = await velocityRes.json();
+  } catch (e: any) {
+    errors.push(`Velocity Engine: ${e.message}`);
+  }
 
   // ─── STEP 8: Check integration health  ─────────────────────────────────────
   try {
