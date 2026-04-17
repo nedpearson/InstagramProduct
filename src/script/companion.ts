@@ -6,6 +6,49 @@ import OpenAI from 'openai';
 const prisma = new PrismaClient();
 const openai = new OpenAI();
 
+async function auditContentPerformance() {
+  console.log(`[COMPANION] 📊 Running Autonomous Analytics Loop...`);
+  
+  // Fetch active assets that haven't been blacklisted
+  const activeAssets = await prisma.contentAsset.findMany({
+    where: { 
+      status: 'published',
+      classification: 'TRIAL'
+    }
+  });
+
+  for (const asset of activeAssets) {
+    if (asset.metaViews > 100) { // Only evaluate statistically significant data
+      if (asset.ctr < 0.02) {
+        console.log(`[COMPANION] 🧊 KILL COMMAND: Asset ${asset.id} generated CTR under 2%. Blacklisting.`);
+        await prisma.contentAsset.update({
+          where: { id: asset.id },
+          data: { classification: 'BLACKLISTED' }
+        });
+      } else if (asset.ctr > 0.05) {
+        console.log(`[COMPANION] 🔥 SCALE COMMAND: Asset ${asset.id} generated Alpha CTR over 5%. Autonomously spawning 3 clones.`);
+        await prisma.contentAsset.update({
+          where: { id: asset.id },
+          data: { classification: 'ALPHA' }
+        });
+
+        // Spawn mutating jobs based on the Alpha
+        for(let i=0; i<3; i++) {
+           await prisma.backgroundJob.create({
+              data: {
+                 jobType: 'generate_content',
+                 payload: JSON.stringify({ campaignId: asset.campaignId, assetType: `Re-engineer this proven viral Alpha hook: ${asset.title}` }),
+                 status: 'pending',
+                 maxAttempts: 3,
+                 runAt: new Date()
+              }
+           });
+        }
+      }
+    }
+  }
+}
+
 async function runCompanion() {
   console.log('[COMPANION] Starting local automation companion...');
   
@@ -19,6 +62,9 @@ async function runCompanion() {
       });
 
       console.log(`[COMPANION] Worker Heartbeat OK. Checking for pending background jobs... (${new Date().toISOString()})`);
+      
+      // 2. Optimization Analytics Loop
+      await auditContentPerformance();
       
       const currentHour = new Date().getHours();
       // Peak Engagement Windows: 8 AM, 12 PM, 6 PM (18)

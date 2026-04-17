@@ -20,6 +20,7 @@ model User {
   memberships    WorkspaceMember[]
   auditLogs      AuditLog[]
   overrides      OverrideLedger[]
+  affiliates     Affiliate[]
 }
 
 model Workspace {
@@ -223,6 +224,12 @@ model ContentAsset {
 
   // Media packaging support
   mediaMetadata String? // json (carousel layout, thumbnails, b-roll ideas)
+  
+  // Analytics Tracking
+  metaViews     Int      @default(0)
+  metaClicks    Int      @default(0)
+  ctr           Float    @default(0.0)
+  classification String  @default("TRIAL") // TRIAL, ALPHA, BLACKLISTED
 
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -832,6 +839,17 @@ model LearningMemory {
   insight         String
   confidence      Float    @default(0.5)
   sourceData      String?  // JSON
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Affiliate {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  uniqueLink      String   @unique
+  clickCount      Int      @default(0)
+  totalCommissions Float   @default(0.0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
