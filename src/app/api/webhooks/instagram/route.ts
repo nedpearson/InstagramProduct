@@ -30,6 +30,25 @@ export async function POST(req: Request) {
             const activeCampaign = await prisma.campaign.findFirst({ where: { status: 'active' }});
 
             if (activeCampaign) {
+              const matchedKeyword = activeCampaign.ctaKeywords?.split(',').map(k => k.trim().toLowerCase()).find(k => messageText.toLowerCase().includes(k));
+              
+              if (matchedKeyword) {
+                 // Push the Send DM background job natively to the execution pipeline
+                 await prisma.backgroundJob.create({
+                    data: {
+                       jobType: 'send_dm',
+                       payload: JSON.stringify({ 
+                          recipientId: senderId, 
+                          message: "Ready to build your autonomous machine? Access the InstaFlow 2026 Pipeline here: https://instaflow.bridgebox.ai",
+                          campaignId: activeCampaign.id
+                       }),
+                       status: 'pending',
+                       maxAttempts: 3,
+                       runAt: new Date()
+                    }
+                 });
+              }
+
               await prisma.lead.upsert({
                 where: { 
                   campaignId_igUsername: {

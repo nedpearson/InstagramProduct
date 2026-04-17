@@ -99,6 +99,8 @@ async function runCompanion() {
             await handleGenerateJob(job.payload);
           } else if (job.jobType === 'publish_content') {
             await handlePublishJob(job.payload);
+          } else if (job.jobType === 'send_dm') {
+            await handleSendDmJob(job.payload);
           } else {
             success = false;
             errorMessage = 'Unknown job type: ' + job.jobType;
@@ -297,6 +299,40 @@ async function handlePublishJob(payloadStr: string | null) {
   });
 
   console.log(`[COMPANION] ✅ SUCCESS: Asset live on Instagram network. IG Post ID: ${publishData.id}`);
+}
+
+async function handleSendDmJob(payloadStr: string | null) {
+  if (!payloadStr) throw new Error('Missing payload for send_dm');
+  const payload = JSON.parse(payloadStr);
+
+  const token = process.env.META_ADS_ACCESS_TOKEN;
+  if (!token) throw new Error('Missing META_ADS_ACCESS_TOKEN for DMs');
+
+  // 1. Resolve IG Account ID from Facebook Page
+  const pagesReq = await fetch(`https://graph.facebook.com/v18.0/me/accounts?fields=instagram_business_account&access_token=${token}`);
+  const pagesData = await pagesReq.json();
+  const igBusId = pagesData?.data?.[0]?.instagram_business_account?.id;
+
+  if (!igBusId) throw new Error("Graph API physical failure: No Instagram Business Account linked to this Token's pages.");
+
+  console.log(`[COMPANION] 📡 Triggering Autonomous DM sent to ${payload.recipientId}...`);
+
+  const dmReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipient: { id: payload.recipientId },
+      message: { text: payload.message },
+      access_token: token
+    })
+  });
+
+  const dmData = await dmReq.json();
+  if (dmData.error) {
+     throw new Error(`Meta DM Rejection: ${JSON.stringify(dmData.error)}`);
+  }
+
+  console.log(`[COMPANION] ✅ Autonomous DM successfully dispatched to ${payload.recipientId}`);
 }
 
 runCompanion().catch(console.error);
