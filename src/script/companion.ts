@@ -156,7 +156,12 @@ async function handleGenerateJob(payloadStr: string | null) {
       },
       {
         role: "user",
-        content: `Generate a viral Instagram Hook and Caption for a new post. Focus on the niche topic provided: "${payload.assetType || 'Automation and AI SaaS'}". Output EXACTLY in JSON format: { "hook": "...", "caption": "...", "format": "reel" } without markdown.`
+        content: `Generate a viral Instagram Hook and Caption for a new post. Focus on the niche topic provided: "${payload.assetType || 'Automation and AI SaaS'}". 
+        
+CRITICAL RULE: You MUST append the following Call-To-Action (CTA) bridge physically at the end of the caption:
+"Ready to build your autonomous machine? Link in bio to access the InstaFlow 2026 Pipeline: https://instaflow.bridgebox.ai"
+
+Output EXACTLY in JSON format: { "hook": "...", "caption": "...", "format": "reel" } without markdown.`
       }
     ]
   });
