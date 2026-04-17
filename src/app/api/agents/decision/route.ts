@@ -180,6 +180,21 @@ export async function POST(request: Request) {
     errors.push(`Integration health: ${e.message}`);
   }
 
+  // ─── STEP 9: Master System Auditor & Validation Engine ─────────────────────
+  try {
+    const auditorRes = await fetch(`${baseUrl}/api/agents/auditor`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    results.systemAudit = await auditorRes.json();
+    
+    if (results.systemAudit.issuesDetected && results.systemAudit.issuesDetected.length > 0) {
+      errors.push(`Auditor found ${results.systemAudit.issuesDetected.length} system issues`);
+    }
+  } catch (e: any) {
+    errors.push(`Auditor failure: ${e.message}`);
+  }
+
   // ─── FINAL REPORT ──────────────────────────────────────────────────────────
   const status = errors.length === 0 ? 'FULLY_AUTONOMOUS' : 'SELF_HEALING';
 
