@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     // Phase 9: Risk + Compliance Layer
     // Ensure no duplication of copyrighted material
-    const safeDeployments = differentiatedProducts.map((asset) => {
+    const safeDeployments = differentiatedProducts.map((asset: any) => {
       // Logic: simulate checking against plagiarism / trademark database
       const isCompliant = true; // No exact match found
 

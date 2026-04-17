@@ -26,20 +26,25 @@ export async function POST(req: Request) {
           const messageText = messaging.message?.text || '';
           
           if (senderId && messageText) {
-            // Find active briefing/campaign context to hook this into
-            const currentBrief = await prisma.productBrief.findFirst();
+            // Find active campaign context to hook this into
+            const activeCampaign = await prisma.campaign.findFirst({ where: { status: 'active' }});
 
-            if (currentBrief) {
+            if (activeCampaign) {
               await prisma.lead.upsert({
-                where: { igUserId: senderId },
+                where: { 
+                  campaignId_igUsername: {
+                    campaignId: activeCampaign.id,
+                    igUsername: senderId
+                  }
+                },
                 create: {
-                  igUserId: senderId,
+                  igUsername: senderId,
                   status: 'new',
-                  notes: `Auto-captured from IG Hook. Initial message: "${messageText}"`,
-                  briefId: currentBrief.id
+                  source: 'instagram_dm',
+                  campaignId: activeCampaign.id
                 },
                 update: {
-                  notes: `Follow-up message: "${messageText}"`
+                  status: 'contacted'
                 }
               });
             }

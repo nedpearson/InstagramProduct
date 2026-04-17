@@ -53,8 +53,8 @@ export async function POST(request: Request) {
     });
 
     // 2. Baseline Validation (Phase 0) & Capital Enforcement (Phase 5/9)
-    const scalingActions = [];
-    const bottlenecks = [];
+    const scalingActions: any[] = [];
+    const bottlenecks: string[] = [];
 
     const analyzedFunnels = funnels.map(f => {
       if (f.sales < 5) {

@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     let testsRunning = 0;
     let winners = 0;
     let killed = 0;
-    const decisions = [];
+    const decisions: any[] = [];
 
     recentPosts.forEach(post => {
       // Mock metrics threshold evaluation
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     });
 
     // Phase 7: Bottleneck Elimination
-    const bottlenecks = [];
+    const bottlenecks: string[] = [];
     if (testsRunning < 5) bottlenecks.push('Low test volume - accelerating content pipeline');
     if (funnelIterations.length === 0) bottlenecks.push('No active funnels to split test - deploying baseline');
 

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   }
 
   // ─── STEP 1.1: Competitive Intelligence & Signal Scoring ───────────────────
-  let winningPatterns = [];
+  let winningPatterns: any[] = [];
   try {
     const compIntRes = await fetch(`${baseUrl}/api/agents/competitive-intelligence`, {
       method: 'POST',

@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, ShieldCheck, ServerCrash, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
-import { PageContainer } from '@/components/ui/PageContainer';
-import { SectionHeader } from '@/components/ui/SectionHeader';
 
 export default function SystemAuditorPage() {
   const [loading, setLoading] = useState(false);
@@ -27,19 +25,25 @@ export default function SystemAuditorPage() {
   }, []);
 
   return (
-    <PageContainer>
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <SectionHeader
-            title="System Auditor & Node Health"
-            description="Live diagnostic telemetry array verifying end-to-end integration connectivity."
-          />
+    <div className="p-5 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 ease-out relative">
+      <div className="mesh-bg-1" />
+      <div className="max-w-5xl mx-auto space-y-6 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="ai-section-label mb-3 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-indigo-400" /> Infrastructure
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white leading-none">System Auditor & Node Health</h1>
+            <p className="text-sm font-medium text-zinc-500 mt-3 leading-relaxed max-w-xl">
+              Live diagnostic telemetry array verifying end-to-end integration connectivity.
+            </p>
+          </div>
           <button
             onClick={runAudit}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 text-indigo-400 rounded-lg hover:bg-indigo-500/20 transition-all font-semibold text-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[13px] rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 mt-4 md:mt-2 disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             Run Diagnostics
           </button>
         </div>
@@ -119,6 +123,6 @@ export default function SystemAuditorPage() {
           </div>
         )}
       </div>
-    </PageContainer>
+    </div>
   );
 }
