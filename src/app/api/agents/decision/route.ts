@@ -36,6 +36,51 @@ export async function POST(request: Request) {
     healed.push('Intelligence: scheduled retry next cycle');
   }
 
+  // ─── STEP 1.1: Competitive Intelligence & Signal Scoring ───────────────────
+  let winningPatterns = [];
+  try {
+    const compIntRes = await fetch(`${baseUrl}/api/agents/competitive-intelligence`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const cpData = await compIntRes.json();
+    results.competitiveIntelligence = cpData;
+    winningPatterns = cpData.winningPatterns || [];
+  } catch (e: any) {
+    errors.push(`CompIntel: ${e.message}`);
+  }
+
+  // ─── STEP 1.2: Differentiation & Risk Layer ────────────────────────────────
+  let strategyUpgrades = [];
+  if (winningPatterns.length > 0) {
+    try {
+      const diffRes = await fetch(`${baseUrl}/api/agents/differentiation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ winningPatterns }),
+      });
+      const diffData = await diffRes.json();
+      results.differentiation = diffData;
+      strategyUpgrades = diffData.strategyUpgrades || [];
+    } catch (e: any) {
+      errors.push(`Differentiation: ${e.message}`);
+    }
+  }
+
+  // ─── STEP 1.3: Funnel & Rapid Deployment Agent ─────────────────────────────
+  if (strategyUpgrades.length > 0) {
+    try {
+      const funnelRes = await fetch(`${baseUrl}/api/agents/funnel-optimization`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strategyUpgrades }),
+      });
+      results.funnelOptimization = await funnelRes.json();
+    } catch (e: any) {
+      errors.push(`FunnelOpt: ${e.message}`);
+    }
+  }
+
   // ─── STEP 2: Run Ads Intelligence Agent ────────────────────────────────────
   try {
     const adsRes = await fetch(`${baseUrl}/api/agents/ads`, {
