@@ -1,16 +1,59 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  // Placeholder for incoming Instagram Webhook events
-  // - Mentions
-  // - Comments
-  // - Story Replies
-  // - DMs
-  return NextResponse.json({ received: true, status: "webhook_ack" });
-}
+  try {
+    const bodyText = await req.text();
+    // Validate signature if secret is set
+    const signature = req.headers.get('x-hub-signature-256');
+    if (process.env.META_APP_SECRET && signature) {
+      const expectedSignature = `sha256=${crypto.createHmac('sha256', process.env.META_APP_SECRET).update(bodyText).digest('hex')}`;
+      if (signature !== expectedSignature) {
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+      }
+    }
 
+    const payload = JSON.parse(bodyText);
+
+    if (payload.object === 'instagram') {
+      for (const entry of payload.entry || []) {
+        for (const messaging of entry.messaging || []) {
+          // Process DMs or Comments
+          const senderId = messaging.sender?.id;
+          const messageText = messaging.message?.text || '';
+          
+          if (senderId && messageText) {
+            // Find active briefing/campaign context to hook this into
+            const currentBrief = await prisma.productBrief.findFirst();
+
+            if (currentBrief) {
+              await prisma.lead.upsert({
+                where: { igUserId: senderId },
+                create: {
+                  igUserId: senderId,
+                  status: 'new',
+                  notes: `Auto-captured from IG Hook. Initial message: "${messageText}"`,
+                  briefId: currentBrief.id
+                },
+                update: {
+                  notes: `Follow-up message: "${messageText}"`
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return NextResponse.json({ received: true, status: 'webhook_ack' });
+  } catch (error) {
+    console.error('Meta webhook parse error', error);
+    return NextResponse.json({ error: 'Parse failed' }, { status: 500 });
+  }
+}
 import { headers } from 'next/headers';
 
 export async function GET(req: Request) {

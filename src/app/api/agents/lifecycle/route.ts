@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
+import { Resend } from 'resend';
 
 export const dynamic = 'force-dynamic';
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_mock_123');
 
 /**
  * Lifecycle Monetization Agent
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
   headers();
   try {
     const body = await request.json().catch(() => ({}));
-    const { leadEmail, action = 'enroll', sequence = 'welcome' } = body;
+    const { leadEmail = 'test@example.com', action = 'enroll', sequence = 'welcome' } = body;
 
     const brief = await prisma.productBrief.findFirst();
     if (!brief) return NextResponse.json({ error: 'No brief configured' }, { status: 404 });
@@ -65,21 +68,37 @@ export async function POST(request: Request) {
         briefId: brief.id,
         agentName: 'Lifecycle Monetization Agent',
         status: 'running',
-        task: `${action}: ${sequence} sequence for ${leadEmail ?? 'all leads'}`,
+        task: `${action}: ${sequence} sequence for ${leadEmail}`,
       }
     });
 
     const sequences = EMAIL_SEQUENCES[sequence as keyof typeof EMAIL_SEQUENCES] ?? EMAIL_SEQUENCES.welcome;
     const emailProvider = process.env.RESEND_API_KEY ? 'resend' : 'mock';
 
-    // In production: send via Resend API
-    // For now: log the sequence that would be sent
-    const results = sequences.map((email, i) => ({
-      step: i + 1,
-      delay: `Day ${email.delay}`,
-      subject: email.subject,
-      status: emailProvider === 'resend' ? 'queued' : 'mock_logged',
-      provider: emailProvider,
+    const results = await Promise.all(sequences.map(async (email, i) => {
+      let status = 'mock_logged';
+      
+      if (emailProvider === 'resend') {
+        try {
+          await resend.emails.send({
+            from: 'InstaFlow Engine <system@instaflow.app>',
+            to: leadEmail,
+            subject: email.subject,
+            text: email.body,
+          });
+          status = 'sent';
+        } catch (e: any) {
+          status = `failed: ${e.message}`;
+        }
+      }
+
+      return {
+        step: i + 1,
+        delay: `Day ${email.delay}`,
+        subject: email.subject,
+        status,
+        provider: emailProvider,
+      };
     }));
 
     await prisma.agentActivity.update({
@@ -87,7 +106,7 @@ export async function POST(request: Request) {
       data: {
         status: 'completed',
         result: JSON.stringify({ sequence, steps: results.length, results }),
-        durationMs: 800,
+        durationMs: emailProvider === 'resend' ? 2500 : 800,
       }
     });
 
@@ -106,3 +125,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
