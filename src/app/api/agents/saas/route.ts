@@ -29,13 +29,13 @@ export async function POST(request: Request) {
       include: {
         owner: true,
         _count: {
-          select: { products: true, campaigns: true, leads: true }
+          select: { products: true, campaigns: true, exports: true }
         }
       }
     });
 
     const highIntentUsers = activeInstallations.filter(w => 
-      w._count.campaigns > 0 || w._count.leads > 5
+      w._count.campaigns > 0 || w._count.exports > 2
     );
 
     // 2. Generate dynamic upgrade offers (mocking discount application logic)
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       let urgency = 'low';
 
       // If they have high usage, offer an upgrade incentive
-      if (workspace._count.leads > 20) {
+      if (workspace._count.exports > 5) {
         discountCode = 'SCALE20'; // 20% off Pro
         urgency = 'high';
       } else if (workspace._count.campaigns > 0) {
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return {
         workspaceId: workspace.id,
         ownerEmail: workspace.owner?.email,
-        usageScore: workspace._count.leads + (workspace._count.campaigns * 10),
+        usageScore: workspace._count.exports + (workspace._count.campaigns * 10),
         discountCode,
         urgency,
         recommendedAction: discountCode ? 'trigger_offer_email' : 'wait'

@@ -12,6 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\",\\\"types\\\":[\\\"node\\\"]} src/script/seed.ts",
     "worker": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\",\\\"types\\\":[\\\"node\\\"]} src/script/companion.ts",
+    "stress": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\",\\\"types\\\":[\\\"node\\\"]} src/script/stress.ts",
     "dev:all": "concurrently \"npm run dev\" \"npm run worker\""
   },
   "keywords": [],
