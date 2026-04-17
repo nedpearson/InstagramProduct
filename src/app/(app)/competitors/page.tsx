@@ -57,7 +57,7 @@ export default async function CompetitorsPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="glass-panel-ai rounded-2xl border border-white/[0.04] p-6 relative z-10 overflow-hidden">
+      <div className="glass-panel-ai rounded-2xl border border-white/[0.04] p-6 relative z-10 overflow-hidden mb-6">
         <h3 className="text-sm font-bold text-white mb-4">Competitor Vulnerability Matrix</h3>
         <div className="w-full overflow-x-auto">
            <table className="w-full text-left border-collapse">
@@ -103,6 +103,32 @@ export default async function CompetitorsPage() {
                  })}
               </tbody>
            </table>
+        </div>
+      </div>
+
+      <div className="glass-panel-ai rounded-2xl border border-white/[0.04] p-6 relative z-10 overflow-hidden bg-gradient-to-br from-indigo-500/[0.03] to-transparent">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-indigo-400" />
+            <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-widest">Differentiation Engine Log</h3>
+          </div>
+          <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold tracking-widest uppercase">Hooks Harvested safely</span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+            <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-bold">Original Traced Hook</div>
+            <div className="text-sm text-zinc-400 italic">"The secret to Instagram growth is posting 3 times a day"</div>
+            <div className="mt-3 text-[10px] text-indigo-500 uppercase tracking-widest mb-1 font-bold">IP-Safe Contrarian Matrix Output</div>
+            <div className="text-sm text-white font-medium border-l-2 border-indigo-500 pl-3 py-1">"Why posting 3x a day on Instagram is killing your reach (Do this instead)"</div>
+          </div>
+          
+          <div className="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+            <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-bold">Original Traced Offer</div>
+            <div className="text-sm text-zinc-400 italic">"$47 eBook on DM sales scripts"</div>
+            <div className="mt-3 text-[10px] text-indigo-500 uppercase tracking-widest mb-1 font-bold">IP-Safe Value Add Output</div>
+            <div className="text-sm text-white font-medium border-l-2 border-indigo-500 pl-3 py-1">Free 7-Day Email Course on DM conversions + $97 Coaching Upsell</div>
+          </div>
         </div>
       </div>
 

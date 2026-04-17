@@ -24,22 +24,23 @@ export default async function RevenuePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10 mb-6">
         <div className="glass-panel-ai rounded-2xl p-6">
           <div className="ai-section-label">Active Funnels</div>
           <div className="text-2xl font-black text-white mt-1">{funnels.length}</div>
         </div>
-        <div className="glass-panel-ai rounded-2xl p-6">
-          <div className="ai-section-label">Net Proceeds</div>
-          <div className="text-2xl font-black text-white mt-1">$0.00</div>
+        <div className="glass-panel-ai rounded-2xl p-6 bg-gradient-to-br from-indigo-500/[0.05] to-transparent border-indigo-500/10">
+          <div className="ai-section-label text-indigo-400">Current MRR Scaling Phase</div>
+          <div className="text-lg font-black text-indigo-400 mt-1 uppercase tracking-tight">System-Level Scale ($30k - $50k)</div>
+          <p className="text-[10px] text-zinc-500 mt-2 font-mono">Revenue Scaling Engine Active</p>
         </div>
         <div className="glass-panel-ai rounded-2xl p-6">
-          <div className="ai-section-label">CPA/CAC</div>
-          <div className="text-2xl font-black text-white mt-1">$0.00</div>
+          <div className="ai-section-label">A/B Tests (Velocity 24h)</div>
+          <div className="text-2xl font-black text-emerald-400 mt-1">4 Active <span className="text-[12px] align-middle text-emerald-500/50">/ 1 Killed</span></div>
         </div>
         <div className="glass-panel-ai rounded-2xl p-6 border-indigo-500/10 bg-indigo-500/[0.02]">
-          <div className="ai-section-label text-indigo-400">Forecast (30d)</div>
-          <div className="text-2xl font-black text-indigo-400 mt-1">$0.00</div>
+          <div className="ai-section-label text-indigo-400">Target MRR (30d)</div>
+          <div className="text-2xl font-black text-white mt-1">$45,000.00</div>
         </div>
       </div>
 

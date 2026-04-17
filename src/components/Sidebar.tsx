@@ -22,6 +22,7 @@ const navigation = [
 ];
 
 const operations = [
+  { name: 'System Auditor & Health', href: '/system', icon: Activity },
   { name: 'Automation Dashboard', href: '/automation', icon: LineChart },
   { name: 'Content Calendar', href: '/calendar', icon: Calendar },
   { name: 'Content Library', href: '/library', icon: Library },
