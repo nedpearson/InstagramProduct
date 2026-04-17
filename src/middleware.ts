@@ -1,0 +1,42 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(req: NextRequest) {
+  const url = req.nextUrl;
+
+  // PASS-THROUGH FOR WEBHOOKS AND APIS
+  // Master Orchestrator, Stripe Webhooks, Meta Webhooks, and static files must NEVER be delayed by auth
+  if (
+    url.pathname.startsWith('/api') || 
+    url.pathname.startsWith('/_next') || 
+    url.pathname === '/favicon.ico' ||
+    url.pathname === '/login'
+  ) {
+    return NextResponse.next();
+  }
+
+  const basicAuth = req.headers.get('authorization');
+
+  if (basicAuth) {
+    const authValue = basicAuth.split(' ')[1];
+    const decoded = Buffer.from(authValue, 'base64').toString();
+    const [user, pwd] = decoded.split(':');
+
+    const validUser = process.env.ADMIN_USERNAME || 'nedpearson@gmail.com';
+    const validPwd = process.env.ADMIN_PASSWORD || '1Pearson2';
+
+    if (user === validUser && pwd === validPwd) {
+      return NextResponse.next();
+    }
+  }
+
+  // Reject with Basic Auth challenge
+  return new NextResponse('Master Systems Authentication Required.', {
+    status: 401,
+    headers: { 'WWW-Authenticate': 'Basic realm="InstaFlow Master Dashboard"' },
+  });
+}
+
+export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+};

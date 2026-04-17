@@ -1,0 +1,38 @@
+name: Master Orchestrator Cron
+
+on:
+  schedule:
+    # Run at the start of every hour (0 * * * *)
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allows manual trigger from GH Actions UI
+
+jobs:
+  ping_master_orchestrator:
+    name: Ping Decision Engine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Master Autonomous Node
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://instagramproduct-production.up.railway.app/api/agents/decision'
+          method: 'POST'
+          timeout: 60000
+          
+      - name: Verify Orchestrator Response
+        run: |
+          echo "Decision Engine triggered successfully."
+
+  ping_meta_renewal:
+    name: Ping Meta Renewal Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Renew Meta Access Tokens
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://instagramproduct-production.up.railway.app/api/cron/meta-refresh'
+          method: 'GET'
+          timeout: 60000
+          
+      - name: Verify Meta Response
+        run: |
+          echo "Token validation/exchange payload delivered."
