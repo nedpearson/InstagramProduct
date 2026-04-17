@@ -83,7 +83,41 @@ export async function POST(request: Request) {
     errors.push(`LTV: ${e.message}`);
   }
 
-  // ─── STEP 5: Check integration health  ─────────────────────────────────────
+  // ─── STEP 5: Lifecycle Agent ───────────────────────────────────────────────
+  try {
+    const lifecycleRes = await fetch(`${baseUrl}/api/agents/lifecycle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'enroll', sequence: 'welcome' }),
+    });
+    results.lifecycle = await lifecycleRes.json();
+  } catch (e: any) {
+    errors.push(`Lifecycle: ${e.message}`);
+  }
+
+  // ─── STEP 6: SaaS Monetization Agent ───────────────────────────────────────
+  try {
+    const saasRes = await fetch(`${baseUrl}/api/agents/saas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    results.saas = await saasRes.json();
+  } catch (e: any) {
+    errors.push(`SaaS: ${e.message}`);
+  }
+
+  // ─── STEP 7: Customer Value (LTV) Agent ────────────────────────────────────
+  try {
+    const cvRes = await fetch(`${baseUrl}/api/agents/customer-value`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    results.customerValue = await cvRes.json();
+  } catch (e: any) {
+    errors.push(`Customer Value: ${e.message}`);
+  }
+
+  // ─── STEP 8: Check integration health  ─────────────────────────────────────
   try {
     const tokens = await prisma.integrationToken.findMany({
       where: { provider: 'meta_graph' },
