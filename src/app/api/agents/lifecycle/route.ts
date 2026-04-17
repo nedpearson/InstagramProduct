@@ -23,7 +23,7 @@ const EMAIL_SEQUENCES = {
     {
       delay: 2,
       subject: 'Your first Instagram post just went live (here\'s what to watch)',
-      body: `Your autonomous content engine just published its first post.\n\nHere's what the AI optimized for:\n✓ Hook in first 3 seconds\n✓ CTA keyword: FLOW\n✓ Optimal posting window: 9AM your timezone\n\nCheck your Instagram now. Then come back and watch the engagement roll in.\n\nWant to see the full 30-day content calendar? Log into your InstaFlow dashboard:\nhttps://instagramproduct-production.up.railway.app/calendar`
+      body: `Your autonomous content engine just published its first post.\n\nHere's what the AI optimized for:\n✓ Hook in first 3 seconds\n✓ CTA keyword: FLOW\n✓ Optimal posting window: 9AM your timezone\n\nCheck your Instagram now. Then come back and watch the engagement roll in.\n\nWant to see the full 30-day content calendar? Log into your InstaFlow dashboard:\nhttps://bridegebox.com/calendar`
     },
     {
       delay: 5,
@@ -42,14 +42,14 @@ const EMAIL_SEQUENCES = {
     {
       delay: 14,
       subject: '⚡ Limited: Upgrade to InstaFlow Pro before this expires',
-      body: `You've been running InstaFlow for 2 weeks.\n\nHere's the difference between your current plan and Pro:\n\nStarter (Free):\n→ 1 campaign\n→ 30 posts/month\n→ Basic analytics\n\nPro ($97/month):\n→ Unlimited campaigns\n→ 300 posts/month\n→ Live competitor tracking\n→ DM funnel automation\n→ Revenue attribution\n\nUpgrade now: https://instagramproduct-production.up.railway.app/billing\n\nFirst month: 50% off → $48.50 (use code: EARLYFLOW)\n\nExpires in 48 hours.`
+      body: `You've been running InstaFlow for 2 weeks.\n\nHere's the difference between your current plan and Pro:\n\nStarter (Free):\n→ 1 campaign\n→ 30 posts/month\n→ Basic analytics\n\nPro ($97/month):\n→ Unlimited campaigns\n→ 300 posts/month\n→ Live competitor tracking\n→ DM funnel automation\n→ Revenue attribution\n\nUpgrade now: https://bridegebox.com/billing\n\nFirst month: 50% off → $48.50 (use code: EARLYFLOW)\n\nExpires in 48 hours.`
     }
   ],
   reengagement: [
     {
       delay: 30,
       subject: 'We noticed you haven\'t logged in — is everything ok?',
-      body: `Hey — it's been a minute.\n\nYour InstaFlow system has been running in the background this whole time, but we want to make sure you're getting value.\n\nHere's what happened while you were away:\n• Your content pipeline kept posting automatically\n• 3 competitor weaknesses were identified\n• Your opportunity score increased to 92/100\n\nLog back in to see your full report:\nhttps://instagramproduct-production.up.railway.app/domination\n\nIf anything isn't working, reply and I'll fix it personally.`
+      body: `Hey — it's been a minute.\n\nYour InstaFlow system has been running in the background this whole time, but we want to make sure you're getting value.\n\nHere's what happened while you were away:\n• Your content pipeline kept posting automatically\n• 3 competitor weaknesses were identified\n• Your opportunity score increased to 92/100\n\nLog back in to see your full report:\nhttps://bridegebox.com/domination\n\nIf anything isn't working, reply and I'll fix it personally.`
     }
   ]
 };
