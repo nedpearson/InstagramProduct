@@ -31,7 +31,15 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // Reject with Basic Auth challenge
+  // If it's a Next.js client-side navigation (RSC) or prefetch, do NOT send WWW-Authenticate, 
+  // as it forces the browser to aggressively pop up the login box over the public marketing pages.
+  const isPrefetch = req.headers.get('rsc') === '1' || req.headers.get('next-router-prefetch') === '1' || req.headers.get('purpose') === 'prefetch';
+
+  if (isPrefetch) {
+    return new NextResponse('Unauthorized API Context', { status: 401 });
+  }
+
+  // Reject with Basic Auth challenge for physical direct visits
   return new NextResponse('Master Systems Authentication Required.', {
     status: 401,
     headers: { 'WWW-Authenticate': 'Basic realm="InstaFlow Master Dashboard"' },
