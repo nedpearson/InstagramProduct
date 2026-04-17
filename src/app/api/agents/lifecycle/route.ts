@@ -42,14 +42,14 @@ const EMAIL_SEQUENCES = {
     {
       delay: 14,
       subject: '⚡ Limited: Upgrade to InstaFlow Pro before this expires',
-      body: `You've been running InstaFlow for 2 weeks.\n\nHere's the difference between your current plan and Pro:\n\nStarter (Free):\n→ 1 campaign\n→ 30 posts/month\n→ Basic analytics\n\nPro ($97/month):\n→ Unlimited campaigns\n→ 300 posts/month\n→ Live competitor tracking\n→ DM funnel automation\n→ Revenue attribution\n\nUpgrade now: https://bridegebox.com/billing\n\nFirst month: 50% off → $48.50 (use code: EARLYFLOW)\n\nExpires in 48 hours.`
+      body: `You've been running InstaFlow for 2 weeks.\n\nHere's the difference between your current plan and Pro:\n\nStarter (Free):\n→ 1 campaign\n→ 30 posts/month\n→ Basic analytics\n\nPro ($97/month):\n→ Unlimited campaigns\n→ 300 posts/month\n→ Live competitor tracking\n→ DM funnel automation\n→ Revenue attribution\n\nUpgrade now: https://instaflow.bridgebox.ai/pricing\n\nFirst month: 50% off → $48.50 (use code: EARLYFLOW)\n\nExpires in 48 hours.`
     }
   ],
   reengagement: [
     {
       delay: 30,
       subject: 'We noticed you haven\'t logged in — is everything ok?',
-      body: `Hey — it's been a minute.\n\nYour InstaFlow system has been running in the background this whole time, but we want to make sure you're getting value.\n\nHere's what happened while you were away:\n• Your content pipeline kept posting automatically\n• 3 competitor weaknesses were identified\n• Your opportunity score increased to 92/100\n\nLog back in to see your full report:\nhttps://bridegebox.com/domination\n\nIf anything isn't working, reply and I'll fix it personally.`
+      body: `Hey — it's been a minute.\n\nYour InstaFlow system has been running in the background this whole time, but we want to make sure you're getting value.\n\nHere's what happened while you were away:\n• Your content pipeline kept posting automatically\n• 3 competitor weaknesses were identified\n• Your opportunity score increased to 92/100\n\nLog back in to see your full report:\nhttps://instaflow.bridgebox.ai/overview\n\nIf anything isn't working, reply and I'll fix it personally.`
     }
   ]
 };

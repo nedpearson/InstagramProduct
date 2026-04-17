@@ -211,7 +211,7 @@ async function main() {
 
   console.log('\n🎯 SYSTEM FULLY SEEDED. InstaFlow is operational.');
   console.log('📊 Campaign:', campaign.name);
-  console.log('🔗 Live at: https://bridegebox.com/products/bridgebox');
+  console.log('🔗 Live at: https://instaflow.bridgebox.ai/products/bridgebox');
 }
 
 main()
