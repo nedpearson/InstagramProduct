@@ -20,8 +20,16 @@ async function runCompanion() {
 
       console.log(`[COMPANION] Worker Heartbeat OK. Checking for pending background jobs... (${new Date().toISOString()})`);
       
+      const currentHour = new Date().getHours();
+      // Peak Engagement Windows: 8 AM, 12 PM, 6 PM (18)
+      const isPeakEngagement = [8, 12, 18].includes(currentHour);
+
       const pendingJobs = await prisma.backgroundJob.findMany({
-        where: { status: 'pending', runAt: { lte: new Date() } },
+        where: { 
+          status: 'pending', 
+          runAt: { lte: new Date() },
+          ...(isPeakEngagement ? {} : { jobType: { not: 'publish_content' } }) 
+        },
         take: 5
       });
 
@@ -188,22 +196,49 @@ async function handlePublishJob(payloadStr: string | null) {
 
   if (!igBusId) throw new Error("Graph API physical failure: No Instagram Business Account linked to this Token's pages.");
 
-  // 2. Upload Media Container
-  console.log(`[COMPANION] Uploading Media Container to IG: ${igBusId}...`);
-  // Dummy URL fallback just to prove network hook, typically this is generated from diffusion/render 
+  // 2. Upload Media Container sequence with 3x rapid recursion block natively
+  let uploadData: any = null;
+  let publishData: any = null;
+  let attempts = 0;
+  let lastError = null;
+
+  console.log(`[COMPANION] Initializing Graph API upload protocol with zero-touch fault-tolerance layer...`);
   const physicalImageUrl = 'https://raw.githubusercontent.com/nedpearson/InstagramProduct/main/public/branding.png';
-  
-  const uploadReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/media?caption=${encodeURIComponent(asset.notes || asset.title)}&image_url=${encodeURIComponent(physicalImageUrl)}&access_token=${token}`, { method: 'POST' });
-  const uploadData = await uploadReq.json();
 
-  if (uploadData.error) throw new Error(`Meta Rejection: ${JSON.stringify(uploadData.error)}`);
-
-  // 3. Publish Media Container
-  console.log(`[COMPANION] Forcing Graph API Publish Action for Container: ${uploadData.id}`);
-  const publishReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/media_publish?creation_id=${uploadData.id}&access_token=${token}`, { method: 'POST' });
-  const publishData = await publishReq.json();
-
-  if (publishData.error) throw new Error(`Meta Publish Rejection: ${JSON.stringify(publishData.error)}`);
+  while (attempts < 3) {
+    try {
+      attempts++;
+      console.log(`[COMPANION] Attempt ${attempts}: Transmitting Media to ${igBusId}...`);
+      const uploadReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/media?caption=${encodeURIComponent(asset.notes || asset.title)}&image_url=${encodeURIComponent(physicalImageUrl)}&access_token=${token}`, { method: 'POST' });
+      uploadData = await uploadReq.json();
+      
+      if (uploadData.error) throw new Error(`Meta Upload Rejection: ${JSON.stringify(uploadData.error)}`);
+      
+      console.log(`[COMPANION] Attempt ${attempts}: Forcing Container Publication: ${uploadData.id}...`);
+      const publishReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/media_publish?creation_id=${uploadData.id}&access_token=${token}`, { method: 'POST' });
+      publishData = await publishReq.json();
+      
+      if (publishData.error) throw new Error(`Meta Publish Rejection: ${JSON.stringify(publishData.error)}`);
+      
+      break; // Success triggers escape from recursion
+    } catch (e: any) {
+      lastError = e;
+      console.warn(`[COMPANION] ⚠️ Meta Graph Error on Attempt ${attempts}: ${e.message}. Retrying instantly...`);
+      if (attempts >= 3) {
+        console.error(`[COMPANION] 🚨 FATAL INSTAGRAM API DROP. Rerouting to manual fallback method.`);
+        // Fallback Reroute Action
+        await prisma.reviewTask.create({
+          data: {
+             entityType: 'instagram_rejection',
+             entityId: asset.id,
+             reason: `Graph API rejected upload 3 times. Manual override required via iOS App. Last Error: ${e.message}`
+          }
+        });
+        throw new Error('Graph API sequence aborted after 3 retries.');
+      }
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Sleep 3s before retry
+    }
+  }
 
   await prisma.contentAsset.update({
     where: { id: asset.id },
