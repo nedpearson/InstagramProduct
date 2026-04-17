@@ -25,7 +25,12 @@ export async function saveManualTokenAction(formData: FormData) {
     let workspace = await prisma.workspace.findFirst();
     if (!workspace) {
       workspace = await prisma.workspace.create({
-        data: { name: 'InstaFlow Production', subscription: 'premium', seats: 5 }
+        data: { 
+          name: 'InstaFlow Production',
+          owner: {
+            create: { email: 'admin@instaflow.ai', name: 'System Admin' }
+          }
+        }
       });
     }
     

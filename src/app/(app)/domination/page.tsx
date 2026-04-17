@@ -9,10 +9,11 @@ export default async function DominationPage() {
   let workspace = await prisma.workspace.findFirst();
   if (!workspace) {
     workspace = await prisma.workspace.create({
-      data: {
+      data: { 
         name: 'InstaFlow Production',
-        subscription: 'premium',
-        seats: 5
+        owner: {
+          create: { email: 'admin@instaflow.ai', name: 'System Admin' }
+        }
       }
     });
   }
