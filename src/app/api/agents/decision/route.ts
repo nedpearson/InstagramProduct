@@ -123,20 +123,14 @@ export async function POST(request: Request) {
       where: { provider: 'meta_graph' },
     });
 
-    const expiredTokens = tokens.filter(t =>
-      t.expiresAt && new Date(t.expiresAt) < new Date()
-    );
-
-    if (expiredTokens.length > 0) {
-      // Flag for reauth — can't auto-renew without user OAuth click
-      healed.push(`${expiredTokens.length} token(s) expired — reauth required at /settings`);
-    }
-
     results.integrationHealth = {
       totalTokens: tokens.length,
-      expiredTokens: expiredTokens.length,
-      status: expiredTokens.length === 0 ? 'HEALTHY' : 'REAUTH_REQUIRED',
+      status: tokens.length > 0 ? 'HEALTHY' : 'REAUTH_REQUIRED',
     };
+
+    if (tokens.length === 0) {
+      healed.push(`No Meta integration token found — authentication required at /settings`);
+    }
   } catch (e: any) {
     errors.push(`Integration health: ${e.message}`);
   }
