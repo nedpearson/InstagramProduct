@@ -161,6 +161,16 @@ export async function POST(request: Request) {
   } catch (e: any) {
     errors.push(`Customer Value: ${e.message}`);
   }
+  // ─── STEP 7.5: Revenue Scaling Engine ──────────────────────────────────────
+  try {
+    const scaleRes = await fetch(`${baseUrl}/api/agents/revenue-scaling`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    results.revenueScaling = await scaleRes.json();
+  } catch (e: any) {
+    errors.push(`Revenue Scaling: ${e.message}`);
+  }
 
   // ─── STEP 8: Check integration health  ─────────────────────────────────────
   try {
