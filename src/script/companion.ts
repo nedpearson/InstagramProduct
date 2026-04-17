@@ -43,6 +43,8 @@ async function runCompanion() {
             await handleExportJob(job.payload);
           } else if (job.jobType === 'generate_content') {
             await handleGenerateJob(job.payload);
+          } else if (job.jobType === 'publish_content') {
+            await handlePublishJob(job.payload);
           } else {
             success = false;
             errorMessage = 'Unknown job type: ' + job.jobType;
@@ -165,6 +167,50 @@ async function handleGenerateJob(payloadStr: string | null) {
   });
 
   console.log('[COMPANION] ✅ OpenAI Generation successfully written to PostgreSQL.');
+}
+
+async function handlePublishJob(payloadStr: string | null) {
+  if (!payloadStr) throw new Error('Missing payload for publish');
+  const payload = JSON.parse(payloadStr);
+
+  const asset = await prisma.contentAsset.findUnique({ where: { id: payload.assetId }});
+  if (!asset) throw new Error('Asset not found');
+
+  console.log(`[COMPANION] 📡 Connecting to Meta Graph API for Asset ${asset.id}...`);
+
+  const token = process.env.META_ADS_ACCESS_TOKEN;
+  if (!token) throw new Error('Missing META_ADS_ACCESS_TOKEN');
+
+  // 1. Resolve IG Account ID from Facebook Page
+  const pagesReq = await fetch(`https://graph.facebook.com/v18.0/me/accounts?fields=instagram_business_account&access_token=${token}`);
+  const pagesData = await pagesReq.json();
+  const igBusId = pagesData?.data?.[0]?.instagram_business_account?.id;
+
+  if (!igBusId) throw new Error("Graph API physical failure: No Instagram Business Account linked to this Token's pages.");
+
+  // 2. Upload Media Container
+  console.log(`[COMPANION] Uploading Media Container to IG: ${igBusId}...`);
+  // Dummy URL fallback just to prove network hook, typically this is generated from diffusion/render 
+  const physicalImageUrl = 'https://raw.githubusercontent.com/nedpearson/InstagramProduct/main/public/branding.png';
+  
+  const uploadReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/media?caption=${encodeURIComponent(asset.notes || asset.title)}&image_url=${encodeURIComponent(physicalImageUrl)}&access_token=${token}`, { method: 'POST' });
+  const uploadData = await uploadReq.json();
+
+  if (uploadData.error) throw new Error(`Meta Rejection: ${JSON.stringify(uploadData.error)}`);
+
+  // 3. Publish Media Container
+  console.log(`[COMPANION] Forcing Graph API Publish Action for Container: ${uploadData.id}`);
+  const publishReq = await fetch(`https://graph.facebook.com/v18.0/${igBusId}/media_publish?creation_id=${uploadData.id}&access_token=${token}`, { method: 'POST' });
+  const publishData = await publishReq.json();
+
+  if (publishData.error) throw new Error(`Meta Publish Rejection: ${JSON.stringify(publishData.error)}`);
+
+  await prisma.contentAsset.update({
+    where: { id: asset.id },
+    data: { status: 'published' }
+  });
+
+  console.log(`[COMPANION] ✅ SUCCESS: Asset live on Instagram network. IG Post ID: ${publishData.id}`);
 }
 
 runCompanion().catch(console.error);
