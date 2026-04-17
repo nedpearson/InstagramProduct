@@ -6,8 +6,16 @@ import MarketAttackDeployer from '@/components/MarketAttackDeployer';
 export const dynamic = 'force-dynamic';
 
 export default async function DominationPage() {
-  const workspace = await prisma.workspace.findFirst();
-  if (!workspace) throw new Error('No workspace active');
+  let workspace = await prisma.workspace.findFirst();
+  if (!workspace) {
+    workspace = await prisma.workspace.create({
+      data: {
+        name: 'InstaFlow Production',
+        subscription: 'premium',
+        seats: 5
+      }
+    });
+  }
 
   const competitors = await prisma.competitor.findMany({
     orderBy: { threatScore: 'desc' },

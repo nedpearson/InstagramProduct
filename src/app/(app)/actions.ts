@@ -22,8 +22,12 @@ export async function saveManualTokenAction(formData: FormData) {
   if (!token) return;
 
   try {
-    const workspace = await prisma.workspace.findFirst();
-    if (!workspace) throw new Error('No workspace found');
+    let workspace = await prisma.workspace.findFirst();
+    if (!workspace) {
+      workspace = await prisma.workspace.create({
+        data: { name: 'InstaFlow Production', subscription: 'premium', seats: 5 }
+      });
+    }
     
     // We overwrite or create
     const existing = await prisma.integrationToken.findFirst({

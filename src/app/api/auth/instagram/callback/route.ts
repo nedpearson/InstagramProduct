@@ -50,8 +50,12 @@ export async function GET(request: Request) {
     // Then fetch /{page-id}?fields=instagram_business_account.
     // We will save the root user long-lived token as a skeleton requirement, marking the initial handshake.
 
-    const workspace = await prisma.workspace.findFirst();
-    if (!workspace) throw new Error('No workspace found');
+    let workspace = await prisma.workspace.findFirst();
+    if (!workspace) {
+      workspace = await prisma.workspace.create({
+        data: { name: 'InstaFlow Production', subscription: 'premium', seats: 5 }
+      });
+    }
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 60); // 60 days approx
