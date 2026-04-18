@@ -10,12 +10,21 @@ export async function GET(request: Request) {
   const code = url.searchParams.get('code');
   const error = url.searchParams.get('error');
 
+  // Derive the real origin (Railway containers resolve request.url to 0.0.0.0:8080)
+  const forwardedHost = new Headers(request.headers).get('x-forwarded-host');
+  const forwardedProto = new Headers(request.headers).get('x-forwarded-proto') || 'https';
+  const realOrigin = forwardedHost
+    ? `${forwardedProto}://${forwardedHost}`
+    : (process.env.META_REDIRECT_URI
+      ? new URL(process.env.META_REDIRECT_URI).origin
+      : url.origin);
+
   if (error) {
-    return NextResponse.redirect(new URL('/settings?error=oauth_denied', request.url));
+    return NextResponse.redirect(new URL('/settings?error=oauth_denied', realOrigin));
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL('/settings?error=missing_code', request.url));
+    return NextResponse.redirect(new URL('/settings?error=missing_code', realOrigin));
   }
 
   const clientId = process.env.META_APP_ID;
@@ -23,11 +32,12 @@ export async function GET(request: Request) {
 
   if (!clientId || !clientSecret) {
     console.error('[OAuth] Missing META_APP_ID or META_APP_SECRET. Halted.');
-    return NextResponse.redirect(new URL('/settings?error=missing_env_credentials', request.url));
+    return NextResponse.redirect(new URL('/settings?error=missing_env_credentials', realOrigin));
   }
 
   try {
-    const redirectUri = `${url.origin}/api/auth/instagram/callback`;
+    // Use the exact redirect URI registered with Meta
+    const redirectUri = process.env.META_REDIRECT_URI || `${realOrigin}/api/auth/instagram/callback`;
 
     // 1. Exchange code for short-lived token
     const tokenResponse = await fetch(`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&client_secret=${clientSecret}&code=${code}`);
@@ -76,10 +86,10 @@ export async function GET(request: Request) {
 
     console.log('[OAuth] Authorization successful. Tokens exchanged and stored.');
 
-    return NextResponse.redirect(new URL('/settings?success=oauth_complete', request.url));
+    return NextResponse.redirect(new URL('/settings?success=oauth_complete', realOrigin));
 
   } catch (err: any) {
     console.error('[OAuth Error]', err);
-    return NextResponse.redirect(new URL('/settings?error=oauth_exchange_failed', request.url));
+    return NextResponse.redirect(new URL('/settings?error=oauth_exchange_failed', realOrigin));
   }
 }
