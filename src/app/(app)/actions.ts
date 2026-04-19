@@ -62,7 +62,7 @@ export async function saveManualTokenAction(formData: FormData) {
 }
 
 
-export async function generateBriefAction(briefId: string) {
+export async function generateBriefAction(briefId: string, skipRevalidate = false) {
   try {
     const brief = await prisma.productBrief.findUnique({
       where: { id: briefId },
@@ -251,10 +251,16 @@ export async function generateBriefAction(briefId: string) {
       data: { status: 'active' }
     });
 
-    revalidatePath('/briefs');
-    revalidatePath('/calendar');
-    revalidatePath('/preview');
-    revalidatePath('/library');
+    if (!skipRevalidate) {
+      try {
+        revalidatePath('/briefs');
+        revalidatePath('/calendar');
+        revalidatePath('/preview');
+        revalidatePath('/library');
+      } catch(e) {
+        // Ignore revalidatePath errors when run outside Next.js request context
+      }
+    }
   } catch (error: any) {
     console.error('Error generating brief:', error);
     throw new Error('Failed to generate content. Please try again.');
