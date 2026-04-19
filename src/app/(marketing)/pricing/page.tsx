@@ -129,12 +129,36 @@ function PricingCard({ plan, annual }: { plan: Plan; annual: boolean }) {
         <p className="text-[12px] text-zinc-500 font-medium leading-relaxed mb-6">{plan.tagline}</p>
 
         {/* CTA */}
-        <Link
-          href={plan.enterprise ? 'mailto:sales@instaflow.ai' : '/billing'}
-          className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${style.cta}`}
-        >
-          {plan.enterprise ? 'Contact Sales' : plan.id === 'starter' ? 'Start Free Trial' : 'Start 14-Day Trial'}
-        </Link>
+        {plan.enterprise ? (
+          <Link
+            href="mailto:sales@instaflow.ai"
+            className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${style.cta}`}
+          >
+            Contact Sales
+          </Link>
+        ) : plan.id === 'starter' ? (
+          <Link
+            href="/overview"
+            className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${style.cta}`}
+          >
+            Start Free Trial
+          </Link>
+        ) : (
+          <button
+            onClick={async () => {
+              const res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ planId: plan.id, isAnnual: annual })
+              });
+              const data = await res.json();
+              if (data.url) window.location.href = data.url;
+            }}
+            className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${style.cta}`}
+          >
+             Start 14-Day Trial
+          </button>
+        )}
       </div>
 
       {/* Feature list */}
