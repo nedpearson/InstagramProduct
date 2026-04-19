@@ -66,6 +66,32 @@ async function runCompanion() {
       // 2. Optimization Analytics Loop
       await auditContentPerformance();
       
+      // 3. Autonomous Schedule Engine Layer
+      // Polls the schedule architecture and triggers exact publication windows
+      const dueSchedules = await prisma.schedule.findMany({
+        where: { scheduledFor: { lte: new Date() }, status: 'pending' },
+        include: { variant: true }
+      });
+
+      for (const sched of dueSchedules) {
+        console.log(`[COMPANION] ⏰ Schedule ${sched.id} reached post window! Transmitting to active queue...`);
+        
+        await prisma.backgroundJob.create({
+          data: {
+            jobType: 'publish_content',
+            payload: JSON.stringify({ assetId: sched.variant.assetId }),
+            status: 'pending',
+            maxAttempts: 3,
+            runAt: new Date()
+          }
+        });
+
+        await prisma.schedule.update({
+          where: { id: sched.id },
+          data: { status: 'published' }
+        });
+      }
+      
       const currentHour = new Date().getHours();
       // Peak Engagement Windows: 8 AM, 12 PM, 6 PM (18)
       const isPeakEngagement = [8, 12, 18].includes(currentHour);

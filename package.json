@@ -7,7 +7,7 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "concurrently \"next start\" \"npm run worker\"",
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
     "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\",\\\"types\\\":[\\\"node\\\"]} src/script/seed.ts",
