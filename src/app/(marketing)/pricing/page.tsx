@@ -152,7 +152,11 @@ function PricingCard({ plan, annual }: { plan: Plan; annual: boolean }) {
                 body: JSON.stringify({ planId: plan.id, isAnnual: annual })
               });
               const data = await res.json();
-              if (data.url) window.location.href = data.url;
+              if (data.url) {
+                 window.location.href = data.url;
+              } else if (data.error) {
+                 alert(data.error);
+              }
             }}
             className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${style.cta}`}
           >

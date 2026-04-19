@@ -24,8 +24,10 @@ export async function POST(req: Request) {
     const lookupKey = `${planId}_${isAnnual ? 'annual' : 'monthly'}`;
     const priceId = priceMap[lookupKey];
 
-    if (!priceId) {
-      return NextResponse.json({ error: 'Invalid plan configuration' }, { status: 400 });
+    if (!priceId || priceId.includes('mock')) {
+      return NextResponse.json({ 
+        error: `Stripe Configuration Incomplete. Please add ${lookupKey.toUpperCase()} (e.g. STRIPE_PRICE_PRO_MONTHLY) to your environment variables.` 
+      }, { status: 400 });
     }
 
     // Get the global workspace/subscription for the reference ID
