@@ -101,7 +101,8 @@ export async function generateBriefAction(briefId: string, skipRevalidate = fals
     // If no match, pick the highest-revenue sector (AI Tools)
     if (!sector) sector = PROFIT_SECTORS[0];
 
-    let scheduledAt = new Date();
+    const lastSched = await prisma.schedule.findFirst({ orderBy: { scheduledFor: 'desc' } });
+    let scheduledAt = lastSched?.scheduledFor ? new Date(lastSched.scheduledFor) : new Date();
 
     // Helper to generate dynamic variations to prevent duplication
     const spinText = (text: string) => {
