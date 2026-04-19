@@ -30,6 +30,22 @@ export async function POST(req: Request) {
 
     if (event.type === 'checkout.session.completed') {
       const workspaceId = session.client_reference_id;
+      
+      // Update the global subscription to Active since checkout succeeded!
+      const activeSub = await prisma.subscription.findFirst();
+      if (activeSub) {
+        await prisma.subscription.update({
+          where: { id: activeSub.id },
+          data: {
+             status: 'active',
+             planId: 'pro',
+             stripeCustomerId: session.customer as string,
+             stripeSubId: session.subscription as string,
+             mrr: session.amount_total ? session.amount_total / 100 : 99,
+          }
+        });
+      }
+
       if (workspaceId) {
         await prisma.billingEvent.create({
           data: {
@@ -42,6 +58,14 @@ export async function POST(req: Request) {
       }
     } else if (event.type === 'customer.subscription.deleted') {
       // Handle churn
+      const activeSub = await prisma.subscription.findFirst();
+      if (activeSub) {
+        await prisma.subscription.update({
+          where: { id: activeSub.id },
+          data: { status: 'cancelled', mrr: 0, cancelledAt: new Date() }
+        });
+      }
+
       const subId = session.id;
       if (subId) {
         await prisma.billingEvent.create({
