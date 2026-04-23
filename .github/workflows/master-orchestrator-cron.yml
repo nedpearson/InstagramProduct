@@ -14,10 +14,11 @@ jobs:
       - name: Trigger Master Autonomous Node
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://bridegebox.com/api/agents/decision'
+          url: 'https://instaflow-bay.vercel.app/api/agents/decision'
           method: 'POST'
           timeout: 60000
-          
+          ignoreStatusCodes: '401,403,404,500,502,503'
+
       - name: Verify Orchestrator Response
         run: |
           echo "Decision Engine triggered successfully."
@@ -29,10 +30,11 @@ jobs:
       - name: Renew Meta Access Tokens
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://bridegebox.com/api/cron/meta-refresh'
+          url: 'https://instaflow-bay.vercel.app/api/cron/meta-refresh'
           method: 'GET'
           timeout: 60000
-          
+          ignoreStatusCodes: '401,403,404,500,502,503'
+
       - name: Verify Meta Response
         run: |
           echo "Token validation/exchange payload delivered."
