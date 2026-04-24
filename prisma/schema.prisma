@@ -408,6 +408,7 @@ model DeadLetterJob {
   stackTrace      String?
   suggestedAction String?
   replayEligible  Boolean       @default(true)
+  firstFailedAt   DateTime      @default(now())
   lastFailedAt    DateTime      @default(now())
   operatorNotes   String?
 
