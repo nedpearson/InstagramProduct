@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   // All routes are now publicly accessible.
   // The app's own authentication system (login page + session) handles access control.
   return NextResponse.next();
