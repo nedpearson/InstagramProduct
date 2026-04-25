@@ -92,15 +92,10 @@ async function runCompanion() {
         });
       }
       
-      const currentHour = new Date().getHours();
-      // Peak Engagement Windows: 8 AM, 12 PM, 6 PM (18)
-      const isPeakEngagement = [8, 12, 18].includes(currentHour);
-
       const pendingJobs = await prisma.backgroundJob.findMany({
         where: { 
           status: 'pending', 
-          runAt: { lte: new Date() },
-          ...(isPeakEngagement ? {} : { jobType: { not: 'publish_content' } }) 
+          runAt: { lte: new Date() }
         },
         take: 5
       });

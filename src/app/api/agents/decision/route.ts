@@ -12,9 +12,9 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   headers();
 
-  const baseUrl = process.env.RAILWAY_PUBLIC_DOMAIN
-    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-    : 'https://instagramproduct-production.up.railway.app';
+  const host = request.headers.get('host') || 'localhost:3000';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
 
   const results: Record<string, any> = {};
   const errors: string[] = [];
