@@ -7,8 +7,9 @@ import {
   LayoutDashboard, FileText, Package, Library, Calendar, Eye,
   AlertCircle, Inbox, Activity, ShieldCheck, LineChart,
   Settings, Menu, Bell, Search, X, Zap, ChevronRight, Gem,
-  CircleDollarSign, Target, TrendingUp, BookOpen
+  CircleDollarSign, Target, TrendingUp, BookOpen, LogOut
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const navigation = [
@@ -34,8 +35,20 @@ const operations = [
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await fetch('/api/auth/login', { method: 'DELETE' });
+    } catch { /* ignore */ } finally {
+      router.push('/login');
+      router.refresh();
+    }
+  };
   const [tick, setTick] = useState(0);
 
   useEffect(() => { setMounted(true); }, []);
@@ -171,21 +184,30 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* System footer */}
-        <div className="px-4 py-4 border-t border-white/[0.04] bg-white/[0.01] shrink-0">
+        <div className="px-4 py-4 border-t border-white/[0.04] bg-white/[0.01] shrink-0 space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-zinc-800 to-zinc-900 flex items-center justify-center text-[11px] font-bold text-white ring-1 ring-white/10 shrink-0">
-              NP
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-700 flex items-center justify-center text-[11px] font-bold text-white ring-1 ring-white/10 shrink-0">
+              IF
             </div>
             <div className="flex flex-col leading-none min-w-0 flex-1">
-              <span className="text-[12px] font-semibold text-white truncate">Ned Pearson</span>
+              <span className="text-[12px] font-semibold text-white truncate">InstaFlow AI</span>
               <span className="text-[10px] text-zinc-500 mt-0.5">Administrator</span>
             </div>
             {/* Plan badge — links to billing */}
             <Link href="/billing" className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all group/plan">
               <Gem className="w-3 h-3 text-indigo-400 group-hover/plan:scale-110 transition-transform" />
-              <span className="text-[9px] font-black text-indigo-400 tracking-widest uppercase">Pro</span>
+              <span className="text-[9px] font-black text-indigo-400 tracking-widest uppercase">Plan</span>
             </Link>
           </div>
+          <button
+            id="logout-btn"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-zinc-600 hover:text-red-400 hover:bg-red-500/[0.06] border border-transparent hover:border-red-500/15 transition-all text-[12px] font-semibold disabled:opacity-50"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            {loggingOut ? 'Signing out...' : 'Sign out'}
+          </button>
         </div>
       </motion.div>
 
