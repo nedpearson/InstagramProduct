@@ -11,10 +11,12 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call to save email
+    setSubmitted(true);
+    // Simulate API call to create account
     setTimeout(() => {
-      setSubmitted(true);
-    }, 600);
+      document.cookie = "instaflow_session=authenticated; path=/; max-age=86400";
+      router.push('/overview');
+    }, 800);
   };
 
   return (
@@ -29,53 +31,56 @@ export default function SignupPage() {
           </div>
         </Link>
         <h2 className="text-center text-3xl font-black tracking-tighter text-white">
-          Apply for Private Beta
+          Create your account
         </h2>
         <p className="mt-2 text-center text-sm text-zinc-400 font-medium max-w-sm mx-auto">
-          InstaFlow AI is currently in private beta. Join the waitlist to get early access to the autonomous growth engine.
+          Start automating your Instagram growth today.
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="bg-[#08080b] py-8 px-4 shadow-2xl sm:rounded-2xl border border-white/[0.06] sm:px-10">
-          {!submitted ? (
-            <form className="space-y-6" onSubmit={handleSignup}>
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                  Work Email Address
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm"
-                    placeholder="name@company.com"
-                  />
-                </div>
+          <form className="space-y-6" onSubmit={handleSignup}>
+            <div>
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                Work Email Address
+              </label>
+              <div className="mt-1">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none block w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm"
+                  placeholder="name@company.com"
+                />
               </div>
-
-              <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-500/20 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-[#08080b] transition-all active:scale-[0.98]"
-                >
-                  Join Waitlist <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="text-center py-6">
-              <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-6 h-6 text-emerald-400" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">You're on the list!</h3>
-              <p className="text-sm text-zinc-400 font-medium">
-                We've received your application. We'll email you at {email} as soon as a spot opens up.
-              </p>
             </div>
-          )}
+            
+            <div>
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                Password
+              </label>
+              <div className="mt-1">
+                <input
+                  type="password"
+                  required
+                  className="appearance-none block w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={submitted}
+                className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-500/20 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-[#08080b] transition-all active:scale-[0.98] disabled:opacity-50"
+              >
+                {submitted ? 'Creating account...' : 'Sign up'} <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </form>
 
           <div className="mt-6 text-center">
             <p className="text-xs text-zinc-500 font-medium">
