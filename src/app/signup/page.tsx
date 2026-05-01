@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Zap, ArrowRight, Clock } from 'lucide-react';
+import { Zap, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();

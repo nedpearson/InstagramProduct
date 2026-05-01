@@ -554,10 +554,12 @@ model BillingEvent {
   id             String       @id @default(uuid())
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  stripeEventId  String?      @unique  // Idempotency: prevent duplicate webhook processing
   type           String       // subscription_created | plan_upgraded | plan_downgraded | payment_succeeded | payment_failed | trial_started | trial_converted | trial_expired | usage_limit_hit | addon_purchased | refund_issued | admin_override
   planId         String?
   amount         Float?
   metadata       String?      // json
+  status         String?      // completed | failed (for payment events)
   createdAt      DateTime     @default(now())
 }
 

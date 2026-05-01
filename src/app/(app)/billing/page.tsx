@@ -2,11 +2,12 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import {
   CreditCard, Gem, Clock, ArrowRight, CheckCircle2,
-  AlertTriangle, Settings2, Lock
+  AlertTriangle, Lock
 } from 'lucide-react';
 import { getSubscription, getAllUsage, trialDaysRemaining } from '@/lib/usageService';
-import { getPlan, PLANS, PLAN_ORDER, ADD_ONS, usagePct, annualSavings, FEATURE_LABELS, type PlanId } from '@/lib/plans';
-import { UsageMeter, UpgradePrompt, LockedFeature } from '@/components/BillingUI';
+import { getPlan, PLANS, PLAN_ORDER, ADD_ONS, usagePct, FEATURE_LABELS, type PlanId } from '@/lib/plans';
+import { UsageMeter, UpgradePrompt } from '@/components/BillingUI';
+import { ManageBillingButton, CancelSubscriptionButton, CheckoutButton, AddOnButton } from './BillingActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -177,12 +178,8 @@ export default async function BillingPage() {
           )}
 
           <div className="flex gap-2 mt-auto">
-            <Link href="/pricing" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[12px] rounded-xl transition-all shadow-lg active:scale-95">
-              <Gem className="w-3.5 h-3.5" /> Upgrade
-            </Link>
-            <button className="px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-white font-bold text-[12px] rounded-xl transition-all shadow-inner active:scale-95 flex items-center gap-1.5">
-              <Settings2 className="w-3.5 h-3.5 text-zinc-400" /> Manage
-            </button>
+            <CheckoutButton planId="pro" label="Upgrade" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[12px] rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50" />
+            <ManageBillingButton />
           </div>
         </div>
 
@@ -264,13 +261,7 @@ export default async function BillingPage() {
                     <span className="text-[18px] font-black text-white tabular-nums">${addon.pricePerUnit}</span>
                     <span className="text-[10px] text-zinc-600 font-medium ml-1">{addon.unit}</span>
                   </div>
-                  <button className={`px-4 py-2 font-bold text-[11px] rounded-xl transition-all active:scale-95 border ${
-                    isActive
-                      ? 'bg-white/[0.04] border-white/[0.08] text-zinc-400 hover:text-white'
-                      : 'bg-indigo-600/80 hover:bg-indigo-500 border-indigo-500/30 text-white shadow-lg hover:shadow-indigo-500/20'
-                  }`}>
-                    {isActive ? 'Manage' : 'Add'}
-                  </button>
+                  <AddOnButton addonType={addon.type} isActive={isActive} />
                 </div>
               </div>
             );
@@ -288,10 +279,17 @@ export default async function BillingPage() {
             <div className="text-[14px] font-bold text-white">Billing History</div>
             <div className="ai-section-label mt-0.5">Events &amp; changes · This account</div>
           </div>
-          <div className="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/[0.08] border border-amber-500/20">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-400 tracking-widest uppercase">Stripe not connected</span>
-          </div>
+          {subscription.stripeCustomerId ? (
+            <div className="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/[0.08] border border-emerald-500/20">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-[10px] font-bold text-emerald-400 tracking-widest uppercase">Stripe Connected</span>
+            </div>
+          ) : (
+            <div className="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/[0.08] border border-amber-500/20">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-[10px] font-bold text-amber-400 tracking-widest uppercase">No active subscription</span>
+            </div>
+          )}
         </div>
 
         {billingEvents.length === 0 ? (
@@ -354,9 +352,7 @@ export default async function BillingPage() {
             <div className="text-[14px] font-bold text-white mb-1">Cancel Subscription</div>
             <p className="text-[12px] text-zinc-500 font-medium">You will retain access until the end of your billing period.</p>
           </div>
-          <button className="px-5 py-2.5 bg-red-500/[0.08] hover:bg-red-500/[0.15] border border-red-500/20 text-red-400 font-bold text-[12px] rounded-xl transition-all active:scale-95">
-            Cancel Subscription
-          </button>
+          <CancelSubscriptionButton />
         </div>
       </div>
     </div>

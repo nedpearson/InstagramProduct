@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Bridgebox Voice Capture",
+  "version": "1.0",
+  "description": "Capture screenshots and record videos of your workflows directly into Bridgebox Voice.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Bridgebox Voice Capture"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "offscreen",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
