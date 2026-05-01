@@ -6,14 +6,28 @@ export const dynamic = 'force-dynamic';
 
 export async function POST() {
   try {
-    // Check if there's any active brief, if so, trigger its orchestration
-    // If none exists, create a dummy one or grab latest
     let brief = await prisma.productBrief.findFirst({
       where: { status: { in: ['draft', 'active', 'processing'] } },
       orderBy: { createdAt: 'desc' }
     });
 
-    if (brief) {
+    let alreadyOrchestrated = false;
+
+    if (!brief) {
+      const product = await prisma.product.findFirst();
+      if (!product) throw new Error('No product found. Cannot execute deployment without a product.');
+      
+      const { createBriefAction } = await import('@/app/(app)/actions');
+      await createBriefAction(product.id); // This internally calls startAutonomousOrchestration
+      alreadyOrchestrated = true;
+      
+      brief = await prisma.productBrief.findFirst({
+        where: { productId: product.id },
+        orderBy: { createdAt: 'desc' }
+      });
+    }
+
+    if (brief && !alreadyOrchestrated) {
       startAutonomousOrchestration(brief.id).catch(console.error);
     }
     

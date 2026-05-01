@@ -8,18 +8,21 @@ export default function CreateAssetButton() {
 
   const handleCreate = async () => {
     setLoading(true);
-    // In a real scenario, this posts to a Server Action to spawn the AI subagent
-    // For now we trigger the loading state, simulate server execution, and resolve.
-    await new Promise(r => setTimeout(r, 1200));
-    setSuccess(true);
-    setLoading(false);
-    
-    // Auto-reset
-    setTimeout(() => {
-       setSuccess(false);
-       // Refresh page or revalidate
-       window.location.reload();
-    }, 1000);
+    try {
+      const { createWorkspaceBriefAction } = await import('@/app/(app)/actions');
+      await createWorkspaceBriefAction();
+      setSuccess(true);
+      setTimeout(() => {
+         setSuccess(false);
+         // Refresh page or revalidate
+         window.location.reload();
+      }, 1000);
+    } catch(e) {
+      console.error(e);
+      setSuccess(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

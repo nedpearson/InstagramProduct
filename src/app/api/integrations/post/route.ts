@@ -60,7 +60,14 @@ export async function GET(req: Request) {
         if (!asset) throw new Error('Asset not found');
 
         console.log(`[CRON] 📡 Connecting to Meta Graph API for Asset ${asset.id}...`);
-        const token = process.env.META_ADS_ACCESS_TOKEN;
+        let token = process.env.META_ADS_ACCESS_TOKEN;
+        const integrationToken = await prisma.integrationToken.findFirst({
+          where: { provider: 'meta_graph' },
+          orderBy: { createdAt: 'desc' }
+        });
+        if (integrationToken) {
+          token = integrationToken.encryptedToken;
+        }
         if (!token) throw new Error('Missing META_ADS_ACCESS_TOKEN');
 
         const pagesReq = await fetch(`https://graph.facebook.com/v18.0/me/accounts?fields=instagram_business_account&access_token=${token}`);

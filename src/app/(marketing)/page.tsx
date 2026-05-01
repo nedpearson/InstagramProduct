@@ -61,8 +61,8 @@ function Navbar() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/overview" className="text-[13px] font-semibold text-zinc-400 hover:text-white transition-colors">Sign in</Link>
-            <Link href="/overview" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95">
+            <Link href="/login" className="text-[13px] font-semibold text-zinc-400 hover:text-white transition-colors">Sign in</Link>
+            <Link href="/signup" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 active:scale-95">
               Start Free →
             </Link>
           </div>
@@ -85,8 +85,8 @@ function Navbar() {
               <a key={label} href={href} onClick={() => setMobileOpen(false)} className="block text-[14px] font-semibold text-zinc-300 hover:text-white py-2 transition-colors">{label}</a>
             ))}
             <div className="pt-4 space-y-3 border-t border-white/[0.06]">
-              <Link href="/overview" className="block w-full text-center py-3 text-[13px] font-semibold text-zinc-400">Sign in</Link>
-              <Link href="/overview" className="block w-full text-center py-3 bg-indigo-600 text-white text-[13px] font-bold rounded-xl">Start Free →</Link>
+              <Link href="/login" className="block w-full text-center py-3 text-[13px] font-semibold text-zinc-400">Sign in</Link>
+              <Link href="/signup" className="block w-full text-center py-3 bg-indigo-600 text-white text-[13px] font-bold rounded-xl">Start Free →</Link>
             </div>
           </motion.div>
         )}
@@ -218,7 +218,7 @@ function PricingCard({ name, price, desc, features, cta, highlight }: any) {
           <span className="text-zinc-500 font-medium text-sm">/mo</span>
         </div>
         <p className="text-[13px] text-zinc-500 mb-7 font-medium leading-relaxed">{desc}</p>
-        <Link href="/overview" className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${highlight
+        <Link href="/signup" className={`block w-full text-center py-3 rounded-xl text-[13px] font-bold transition-all active:scale-95 ${highlight
           ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg hover:shadow-indigo-500/25'
           : 'bg-white/[0.06] hover:bg-white/[0.10] text-white border border-white/[0.08]'}`}>
           {cta}
@@ -319,7 +319,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, delay: 0.26 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-3"
             >
-              <Link href="/overview" className="group flex items-center gap-2 px-7 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[15px] rounded-xl shadow-xl hover:shadow-indigo-500/30 transition-all duration-200 active:scale-95">
+              <Link href="/signup" className="group flex items-center gap-2 px-7 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[15px] rounded-xl shadow-xl hover:shadow-indigo-500/30 transition-all duration-200 active:scale-95">
                 Start for free
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -594,7 +594,7 @@ export default function LandingPage() {
                 <h2 className="text-3xl lg:text-4xl font-black tracking-tighter text-white mb-4">Start building your<br />AI funnel today.</h2>
                 <p className="text-[15px] text-zinc-400 font-medium mb-8 max-w-sm mx-auto leading-relaxed">Join operators scaling Instagram-powered digital product businesses with zero manual effort.</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link href="/overview" className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[15px] rounded-xl shadow-xl hover:shadow-indigo-500/30 transition-all duration-200 active:scale-95">
+                  <Link href="/signup" className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[15px] rounded-xl shadow-xl hover:shadow-indigo-500/30 transition-all duration-200 active:scale-95">
                     Get started free <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <a href="#pricing" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 font-semibold text-[15px] rounded-xl transition-all duration-200">
