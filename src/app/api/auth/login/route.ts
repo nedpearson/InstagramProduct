@@ -33,6 +33,9 @@ export async function POST(req: Request) {
       passwordValid = await bcrypt.compare(password, user.hashedPassword);
     } else {
       // Fallback: compare against OWNER_PASSWORD env var for legacy admin accounts
+      if (!process.env.OWNER_PASSWORD && process.env.NODE_ENV === 'production') {
+        console.warn('[auth/login] WARNING: OWNER_PASSWORD env var not set. Using insecure default. Set OWNER_PASSWORD in Railway immediately.');
+      }
       const ownerPassword = process.env.OWNER_PASSWORD ?? 'admin123';
       passwordValid = password === ownerPassword && user.systemRole === 'admin';
 
