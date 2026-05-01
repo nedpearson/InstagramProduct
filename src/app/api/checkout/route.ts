@@ -57,8 +57,8 @@ export async function POST(req: Request) {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       allow_promotion_codes: true,
-      success_url: `${appUrl}/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/billing?canceled=true`,
+      success_url: `${appUrl}/billing/return?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}/billing/return?canceled=true`,
       client_reference_id: activeSub?.id ?? 'anonymous',
       metadata: { planId, isAnnual: String(isAnnual ?? false) },
       subscription_data: {

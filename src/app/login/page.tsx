@@ -17,16 +17,26 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    // Hardcoded auth check for the owner
-    if (email.toLowerCase() === 'nedpearson@gmail.com' && password === 'admin123') {
-      // Set a simple cookie for middleware
-      document.cookie = "instaflow_session=authenticated; path=/; max-age=86400";
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? 'Login failed. Please try again.');
+        return;
+      }
+
+      // Session cookie set by server — just navigate
       router.push('/overview');
-    } else {
-      setTimeout(() => {
-        setLoading(false);
-        setError('Invalid credentials or account not provisioned yet.');
-      }, 800);
+      router.refresh();
+    } catch {
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,8 +69,10 @@ export default function LoginPage() {
               </label>
               <div className="mt-1">
                 <input
+                  id="email"
                   type="email"
                   required
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm"
@@ -75,8 +87,10 @@ export default function LoginPage() {
               </label>
               <div className="mt-1">
                 <input
+                  id="password"
                   type="password"
                   required
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm"
@@ -87,13 +101,14 @@ export default function LoginPage() {
 
             {error && (
               <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center gap-2">
-                <Lock className="w-4 h-4" />
+                <Lock className="w-4 h-4 shrink-0" />
                 {error}
               </div>
             )}
 
             <div>
               <button
+                id="login-submit"
                 type="submit"
                 disabled={loading}
                 className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-500/20 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-[#08080b] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
@@ -106,7 +121,10 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <p className="text-xs text-zinc-500 font-medium">
-              Don't have an account? <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">Create an account</Link>
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">
+                Create an account
+              </Link>
             </p>
           </div>
         </div>
