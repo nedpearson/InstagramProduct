@@ -4,12 +4,6 @@ import Stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
 
-// ─── Stripe client ────────────────────────────────────────────────────────────
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
-});
-
 // ─── Price ID → Plan ID mapping ───────────────────────────────────────────────
 
 const PRICE_TO_PLAN: Record<string, string> = {
@@ -116,6 +110,12 @@ async function recordEventIdempotent(
 // ─── Webhook handler ──────────────────────────────────────────────────────────
 
 export async function POST(req: Request) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
+  }
+  const stripe = new Stripe(stripeKey, { apiVersion: '2025-01-27.acacia' as any });
+
   const body = await req.text();
   const signature = req.headers.get('stripe-signature') ?? '';
 

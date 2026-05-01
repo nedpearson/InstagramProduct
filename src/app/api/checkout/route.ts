@@ -4,10 +4,6 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
-});
-
 // ─── Plan → Price ID mapping ──────────────────────────────────────────────────
 
 const PRICE_MAP: Record<string, string | undefined> = {
@@ -20,6 +16,11 @@ const PRICE_MAP: Record<string, string | undefined> = {
 };
 
 export async function POST(req: Request) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) {
+    return NextResponse.json({ error: 'Stripe not configured on server.' }, { status: 500 });
+  }
+  const stripe = new Stripe(stripeKey, { apiVersion: '2025-01-27.acacia' as any });
   try {
     const body = await req.json();
     const { planId, isAnnual, email } = body as {
