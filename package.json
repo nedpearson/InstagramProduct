@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "node scripts/migrate.js && prisma generate && next build",
-    "start": "concurrently \"next start\" \"npm run worker\"",
+    "build": "prisma generate && next build",
+    "start": "node scripts/migrate.js && concurrently \"next start\" \"npm run worker\"",
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
     "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\",\\\"types\\\":[\\\"node\\\"]} src/script/seed.ts",
